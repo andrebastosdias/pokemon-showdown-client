@@ -30,6 +30,9 @@
 				if (this.curTeam.format.includes('bdsp')) {
 					this.curTeam.dex = Dex.mod('gen8bdsp');
 				}
+				if (this.curTeam.format.includes('legends')) {
+					this.curTeam.dex = Dex.mod('gen8legends');
+				}
 				Storage.activeSetList = this.curSetList;
 			}
 		},
@@ -753,6 +756,9 @@
 			if (this.curTeam.format.includes('bdsp')) {
 				this.curTeam.dex = Dex.mod('gen8bdsp');
 			}
+			if (this.curTeam.format.includes('legends')) {
+				this.curTeam.dex = Dex.mod('gen8legends');
+			}
 			Storage.activeSetList = this.curSetList = Storage.unpackTeam(this.curTeam.team);
 			this.curTeamIndex = i;
 			this.update();
@@ -1278,6 +1284,7 @@
 			var species = this.curTeam.dex.species.get(set.species);
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
+			var isLegends = this.curTeam.format.includes('legends');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 			var buf = '<li value="' + i + '">';
 			if (!set.species) {
@@ -1324,7 +1331,7 @@
 				buf += '<span class="detailcell"><label>Shiny</label>' + (set.shiny ? 'Yes' : 'No') + '</span>';
 				if (!isLetsGo && this.curTeam.gen < 9) {
 					if (this.curTeam.gen === 8 && !isNatDex) {
-						if (isBDSP && species.baseSpecies === "Unown") {
+						if ((isBDSP || isLegends) && species.baseSpecies === "Unown") {
 							buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
 						}
 						// Hidden Power isn't in normal Gen 8
@@ -1332,7 +1339,7 @@
 						buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
 					}
 				}
-				if (this.curTeam.gen === 8 && !isBDSP) {
+				if (this.curTeam.gen === 8 && !isBDSP && !isLegends) {
 					if (!species.cannotDynamax && set.dynamaxLevel !== 10 && set.dynamaxLevel !== undefined) {
 						buf += '<span class="detailcell"><label>Dmax Level</label>' + (typeof set.dynamaxLevel === 'number' ? set.dynamaxLevel : 10) + '</span>';
 					}
@@ -1365,8 +1372,8 @@
 
 			buf += '<div class="setrow">';
 			// if (this.curTeam.gen > 1 && !isLetsGo) buf += '<div class="setcell setcell-item"><label>Item</label><input type="text" name="item" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.item) + '" /></div>';
-			if (this.curTeam.gen > 1) buf += '<div class="setcell setcell-item"><label>Item</label><input type="text" name="item" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.item) + '" autocomplete="off" /></div>';
-			if (this.curTeam.gen > 2 && !isLetsGo) buf += '<div class="setcell setcell-ability"><label>Ability</label><input type="text" name="ability" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.ability) + '" autocomplete="off" /></div>';
+			if (this.curTeam.gen > 1 && !isLegends) buf += '<div class="setcell setcell-item"><label>Item</label><input type="text" name="item" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.item) + '" autocomplete="off" /></div>';
+			if (this.curTeam.gen > 2 && !isLetsGo && !isLegends) buf += '<div class="setcell setcell-ability"><label>Ability</label><input type="text" name="ability" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.ability) + '" autocomplete="off" /></div>';
 			buf += '</div></div>';
 
 			// moves
@@ -1380,7 +1387,7 @@
 
 			// stats
 			buf += '<div class="setcol setcol-stats"><div class="setrow"><label>Stats</label><button class="textbox setstats" name="stats">';
-			buf += '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (!isLetsGo ? 'EV' : 'AV') + '</em></span>';
+			buf += '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (isLegends? '' : !isLetsGo ? 'EV' : 'AV') + '</em></span>';
 			var stats = {};
 			var defaultEV = (this.curTeam.gen > 2 ? 0 : 252);
 			for (var j in BattleStatNames) {
@@ -1605,6 +1612,9 @@
 			}
 			if (this.curTeam.format.includes('bdsp')) {
 				this.curTeam.dex = Dex.mod('gen8bdsp');
+			}
+			if (this.curTeam.format.includes('legends')) {
+				this.curTeam.dex = Dex.mod('gen8legends');
 			}
 			this.save();
 			if (this.curTeam.gen === 5 && !Dex.loadedSpriteData['bw']) Dex.loadSpriteData('bw');
@@ -1981,10 +1991,11 @@
 
 			var stats = {hp:'', atk:'', def:'', spa:'', spd:'', spe:''};
 
-			var supportsEVs = !this.curTeam.format.includes('letsgo');
+			var isLegends = this.curTeam.format.includes('legends');
+			var supportsEVs = !this.curTeam.format.includes('letsgo') && !isLegends;
 
 			// stat cell
-			var buf = '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (supportsEVs ? 'EV' : 'AV') + '</em></span>';
+			var buf = '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (isLegends ? '' : supportsEVs ? 'EV' : 'AV') + '</em></span>';
 			var defaultEV = (this.curTeam.gen > 2 ? 0 : 252);
 			for (var stat in stats) {
 				if (stat === 'spd' && this.curTeam.gen === 1) continue;
@@ -2246,11 +2257,12 @@
 			var nature = BattleNatures[set.nature || 'Serious'];
 			if (!nature) nature = {};
 
-			var supportsEVs = !this.curTeam.format.includes('letsgo');
+			var isLegends = this.curTeam.format.includes('legends');
+			var supportsEVs = !this.curTeam.format.includes('letsgo') && !isLegends;
 			// var supportsAVs = !supportsEVs && this.curTeam.format.endsWith('norestrictions');
 			var defaultEV = this.curTeam.gen <= 2 ? 252 : 0;
-			var maxEV = supportsEVs ? 252 : 200;
-			var stepEV = supportsEVs ? 4 : 1;
+			var maxEV = isLegends ? 0 : supportsEVs ? 252 : 200;
+			var stepEV = isLegends ? 0 : supportsEVs ? 4 : 1;
 
 			// label column
 			buf += '<div class="col labelcol"><div></div>';
@@ -2497,8 +2509,8 @@
 			var inputName = '';
 			inputName = e.currentTarget.name;
 			var val = Math.abs(parseInt(e.currentTarget.value, 10));
-			var supportsEVs = !this.curTeam.format.includes('letsgo');
-			var supportsAVs = !supportsEVs && this.curTeam.format.endsWith('norestrictions');
+			var supportsEVs = !this.curTeam.format.includes('letsgo') && !this.curTeam.format.includes('legends');
+			var supportsAVs = this.curTeam.format.includes('letsgo') && this.curTeam.format.endsWith('norestrictions');
 			var set = this.curSet;
 			if (!set) return;
 
@@ -2618,8 +2630,8 @@
 			var val = +slider.value;
 			var originalVal = val;
 			var result = this.getStat(stat, set, val);
-			var supportsEVs = !this.curTeam.format.includes('letsgo');
-			var supportsAVs = !supportsEVs && this.curTeam.format.endsWith('norestrictions');
+			var supportsEVs = !this.curTeam.format.includes('letsgo') && !this.curTeam.format.includes('legends');
+			var supportsAVs = this.curTeam.format.includes('letsgo') && this.curTeam.format.endsWith('norestrictions');
 			if (supportsEVs) {
 				while (val > 0 && this.getStat(stat, set, val - 4) == result) val -= 4;
 			}
@@ -2722,6 +2734,7 @@
 			var set = this.curSet;
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
+			var isLegends = this.curTeam.format.includes('legends');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 			var isHackmons = this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh');
 			var species = this.curTeam.dex.species.get(set.species);
@@ -2758,7 +2771,7 @@
 				buf += '<label class="checkbox inline"><input type="radio" name="shiny" value="no"' + (!set.shiny ? ' checked' : '') + ' /> No</label>';
 				buf += '</div></div>';
 
-				if (this.curTeam.gen === 8 && !isBDSP) {
+				if (this.curTeam.gen === 8 && !isBDSP && !isLegends) {
 					if (!species.cannotDynamax) {
 						buf += '<div class="formrow"><label class="formlabel">Dmax Level:</label><div><input type="number" min="0" max="10" step="1" name="dynamaxlevel" value="' + (typeof set.dynamaxLevel === 'number' ? set.dynamaxLevel : 10) + '" class="textbox inputform numform" /></div></div>';
 					}
@@ -2785,7 +2798,7 @@
 				buf += '</select></div></div>';
 			}
 
-			if (!isLetsGo && (this.curTeam.gen === 7 || isNatDex || (isBDSP && species.baseSpecies === 'Unown'))) {
+			if (!isLetsGo && (this.curTeam.gen === 7 || isNatDex || ((isBDSP || isLegends) && species.baseSpecies === 'Unown'))) {
 				buf += '<div class="formrow"><label class="formlabel" title="Hidden Power Type">Hidden Power:</label><div><select name="hptype" class="button">';
 				buf += '<option value=""' + (!set.hpType ? ' selected="selected"' : '') + '>(automatic type)</option>'; // unset
 				var types = Dex.types.all();
@@ -2828,6 +2841,7 @@
 			var species = this.curTeam.dex.species.get(set.species);
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
+			var isLegends = this.curTeam.format.includes('legends');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 
 			// level
@@ -2912,7 +2926,7 @@
 				}
 				buf += '<span class="detailcell"><label>Shiny</label>' + (set.shiny ? 'Yes' : 'No') + '</span>';
 				if (!isLetsGo && (this.curTeam.gen < 8 || isNatDex)) buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
-				if (this.curTeam.gen === 8 && !isBDSP) {
+				if (this.curTeam.gen === 8 && !isBDSP && !isLegends) {
 					if (!species.cannotDynamax) {
 						buf += '<span class="detailcell"><label>Dmax Level</label>' + (typeof set.dynamaxLevel === 'number' ? set.dynamaxLevel : 10) + '</span>';
 					}
@@ -3143,6 +3157,7 @@
 				var baseFormat = this.curTeam.format;
 				if (baseFormat.substr(0, 3) === 'gen') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 4) === 'bdsp') baseFormat = baseFormat.substr(4);
+				if (baseFormat.substr(0, 7) === 'legends') baseFormat = baseFormat.substr(7);
 				if (baseFormat.substr(0, 8) === 'pokebank') baseFormat = baseFormat.substr(8);
 				if (baseFormat.substr(0, 6) === 'natdex') baseFormat = baseFormat.substr(6);
 				if (baseFormat.substr(0, 11) === 'nationaldex') baseFormat = baseFormat.substr(11);
@@ -3178,6 +3193,7 @@
 				var baseFormat = this.curTeam.format;
 				if (baseFormat.substr(0, 3) === 'gen') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 4) === 'bdsp') baseFormat = baseFormat.substr(4);
+				if (baseFormat.substr(0, 7) === 'legends') baseFormat = baseFormat.substr(7);
 				if (baseFormat.substr(0, 8) === 'pokebank') baseFormat = baseFormat.substr(8);
 				if (baseFormat.substr(0, 6) === 'natdex') baseFormat = baseFormat.substr(6);
 				if (baseFormat.substr(0, 11) === 'nationaldex') baseFormat = baseFormat.substr(11);
@@ -3408,6 +3424,7 @@
 				var format = window.BattleFormats && window.BattleFormats[baseFormat];
 				if (baseFormat.substr(0, 3) === 'gen') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 4) === 'bdsp') baseFormat = baseFormat.substr(4);
+				if (baseFormat.substr(0, 7) === 'legends') baseFormat = baseFormat.substr(7);
 				if (baseFormat.substr(0, 8) === 'pokebank') baseFormat = baseFormat.substr(8);
 				if (baseFormat.substr(0, 6) === 'natdex') baseFormat = baseFormat.substr(6);
 				if (baseFormat.substr(0, 11) === 'nationaldex') baseFormat = baseFormat.substr(11);

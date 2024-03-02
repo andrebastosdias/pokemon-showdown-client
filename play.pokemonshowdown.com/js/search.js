@@ -263,7 +263,11 @@
 		buf += '<button class="sortcol numsortcol' + (!this.sortCol ? ' cur' : '') + '">' + (!this.sortCol ? 'Sort: ' : this.engine.firstPokemonColumn) + '</button>';
 		buf += '<button class="sortcol pnamesortcol' + (this.sortCol === 'name' ? ' cur' : '') + '" data-sort="name">Name</button>';
 		buf += '<button class="sortcol typesortcol' + (this.sortCol === 'type' ? ' cur' : '') + '" data-sort="type">Types</button>';
-		buf += '<button class="sortcol abilitysortcol' + (this.sortCol === 'ability' ? ' cur' : '') + '" data-sort="ability">Abilities</button>';
+		if (this.engine.dex.modid === "gen8legends") {
+			buf += '<button class="sortcol abilitysortcol' + (this.sortCol === 'ability' ? ' cur' : '') + '" data-sort="ability" style="width: 86px;">Abilities</button>';
+		} else {
+			buf += '<button class="sortcol abilitysortcol' + (this.sortCol === 'ability' ? ' cur' : '') + '" data-sort="ability">Abilities</button>';
+		}
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'hp' ? ' cur' : '') + '" data-sort="hp">HP</button>';
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'atk' ? ' cur' : '') + '" data-sort="atk">Atk</button>';
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'def' ? ' cur' : '') + '" data-sort="def">Def</button>';
@@ -343,7 +347,14 @@
 		buf += '</span> ';
 
 		// abilities
-		if (gen >= 3) {
+		if (this.engine.dex.modid === "gen8legends") {
+			var abilities = pokemon.abilities;
+			if (abilities['0'] === "No Ability") {
+				buf += '<span class="col abilitycol"></span>';
+			} else {
+				buf += '<span class="col abilitycol">' + abilities['0'] + '</span>';
+			}
+		}else if (gen >= 3) {
 			var abilities = Dex.forGen(gen).species.get(id).abilities;
 			if (gen >= 5) {
 				if (abilities['1']) {
