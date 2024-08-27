@@ -1232,7 +1232,7 @@
 					buf += '<li><em>you have no pokemon lol</em></li>';
 				}
 				for (i = 0; i < this.curSetList.length; i++) {
-					if (this.curSetList.length < this.curTeam.capacity && this.deletedSet && i === this.deletedSetLoc) {
+					if ((this.curSetList.length < this.curTeam.capacity || this.curTeam.capacity > 6) && this.deletedSet && i === this.deletedSetLoc) {
 						buf += '<li><button name="undeleteSet" class="button"><i class="fa fa-undo"></i> Undo Delete</button></li>';
 					}
 					buf += this.renderSet(this.curSetList[i], i);
@@ -1243,7 +1243,7 @@
 				if (i === 0) {
 					buf += '<li><button name="import" class="button big"><i class="fa fa-upload"></i> Import from text or URL</button></li>';
 				}
-				if (i < this.curTeam.capacity) {
+				if (i < this.curTeam.capacity || this.curTeam.capacity > 6) {
 					buf += '<li><button name="addPokemon" class="button big"><i class="fa fa-plus"></i> Add Pok&eacute;mon</button></li>';
 				}
 				buf += '</ol>';
@@ -1539,7 +1539,7 @@
 		pastePokemon: function (i, btn) {
 			if (!this.curTeam) return;
 			var team = this.curSetList;
-			if (team.length >= this.curTeam.capacity) return;
+			if (team.length >= this.curTeam.capacity && this.curTeam.capacity <= 6) return;
 			if (!this.clipboardCount()) return;
 
 			if (team.push($.extend(true, {}, this.clipboard[0])) >= 6) {
@@ -1642,7 +1642,7 @@
 			buf += '<div class="teambuilder-clipboard-title">Clipboard:</div>';
 			buf += '<div class="teambuilder-clipboard-data" tabindex="-1">' + this.clipboardInnerHTML() + '</div>';
 			buf += '<div class="teambuilder-clipboard-buttons">';
-			if (this.curTeam && this.curSetList.length < this.curTeam.capacity) {
+			if (this.curTeam && (this.curSetList.length < this.curTeam.capacity || this.curTeam.capacity > 6)) {
 				buf += '<button name="pastePokemon" class="teambuilder-clipboard-button-left button"><i class="fa fa-clipboard"></i> Paste!</button>';
 			}
 			buf += '<button name="clipboardRemoveAll" class="teambuilder-clipboard-button-right button"><i class="fa fa-trash"></i> Clear clipboard</button>';
@@ -1963,7 +1963,7 @@
 					buf += '<button name="selectPokemon" value="' + i + '" class="pokemon">' + pokemonicon + BattleLog.escapeHTML(set.name || this.curTeam.dex.species.get(set.species).baseSpecies) + '</button> ';
 				}
 			}
-			if (this.curSetList.length < this.curTeam.capacity && !isAdd) {
+			if ((this.curSetList.length < this.curTeam.capacity || this.curTeam.capacity > 6) && !isAdd) {
 				buf += '<button name="addPokemon"><i class="fa fa-plus"></i></button> ';
 			}
 			return buf;
@@ -2023,6 +2023,9 @@
 			for (var stat in stats) {
 				if (stat === 'spd' && this.curTeam.gen === 1) continue;
 				buf += '<div><b>' + stats[stat] + '</b></div>';
+			}
+			if (isLegends) {
+				buf += '<div><b>' + this.getActionSpeed(stats['spe']) + '</b></div>';
 			}
 			this.$chart.find('.statscol').html(buf);
 
@@ -2294,7 +2297,7 @@
 			if (this.curTeam.gen > 2 && supportsEVs) buf += '<div><em>Remaining:</em></div>';
 			buf += '</div>';
 
-			buf += '<div class="col evcol"><div><strong>' + (supportsEVs ? 'EVs' : 'AVs') + '</strong></div>';
+			buf += '<div class="col evcol"><div><strong>' + (isLegends ? '' : supportsEVs ? 'EVs' : 'AVs') + '</strong></div>';
 			var totalev = 0;
 			this.plus = '';
 			this.minus = '';
@@ -2464,8 +2467,14 @@
 			for (var i in stats) {
 				buf += '<div><b>' + stats[i] + '</b></div>';
 			}
+			if (isLegends) {
+				buf += '<div><b>' + this.getActionSpeed(stats['spe']) + '</b></div>';
+			}
 			buf += '</div>';
 
+			if (isLegends) {
+				buf += '<p style="clear:both;position:relative;margin:0px;top:-24px;font-size:9pt">Default Action Speed</p>';
+			}
 			if (this.curTeam.gen > 2) {
 				buf += '<p style="clear:both">Nature: <select name="nature" class="button">';
 				for (var i in BattleNatures) {
@@ -3469,6 +3478,48 @@
 		// Stat calculator
 
 		getStat: function (stat, set, evOverride, natureOverride) {
+			if (this.curTeam.format.includes('legends')) {
+				if (!set) set = this.curSet;
+				if (!set) return 0;
+
+				if (!set.ivs) set.ivs = {
+					hp: 31,
+					atk: 31,
+					def: 31,
+					spa: 31,
+					spd: 31,
+					spe: 31
+				};
+				if (!set.evs) set.evs = {};
+
+				var species = this.curTeam.dex.species.get(set.species);
+				if (!species.exists) return 0;
+
+				if (!set.level) set.level = 100;
+				if (typeof set.ivs[stat] === 'undefined') set.ivs[stat] = 31;
+
+				var baseStat = species.baseStats[stat];
+				var iv = (set.ivs[stat] || 0);
+
+				var val = null;
+				if (stat === 'hp') {
+					val = Math.floor((set.level / 100 + 1) * baseStat + set.level);
+				} else {
+					val = Math.floor((set.level / 50 + 1) * baseStat / 1.5);
+					if (natureOverride) {
+						val *= natureOverride;
+					} else if (BattleNatures[set.nature] && BattleNatures[set.nature].plus === stat) {
+						val *= 1.1;
+					} else if (BattleNatures[set.nature] && BattleNatures[set.nature].minus === stat) {
+						val *= 0.9;
+					}
+					val = Math.floor(val);
+				}
+				var multiplier = [0, 2, 3, 4, 7, 8, 9, 14, 15, 16, 25][Math.min(iv, 10)];
+				var effortLevelBonus = Math.round((Math.sqrt(baseStat) * multiplier + set.level) / 2.5);
+				return Math.floor(val) + effortLevelBonus;
+			}
+
 			var supportsEVs = !this.curTeam.format.includes('letsgo');
 			var supportsAVs = !supportsEVs;
 			if (!set) set = this.curSet;
@@ -3520,6 +3571,19 @@
 				val = Math.floor(val) * friendshipValue / 100 + (supportsAVs ? ev : 0);
 			}
 			return Math.floor(val);
+		},
+
+		getActionSpeed(speed) {
+			if (speed <= 15) return 14;
+			else if (speed <= 31) return 13;
+			else if (speed <= 55) return 12;
+			else if (speed <= 88) return 11;
+			else if (speed <= 129) return 10;
+			else if (speed <= 181) return 9;
+			else if (speed <= 242) return 8;
+			else if (speed <= 316) return 7;
+			else if (speed <= 401) return 6;
+			else return 5;
 		},
 
 		// initialization
