@@ -354,7 +354,7 @@
 			} else {
 				buf += '<span class="col abilitycol">' + abilities['0'] + '</span>';
 			}
-		}else if (gen >= 3) {
+		} else if (gen >= 3) {
 			var abilities = Dex.forGen(gen).species.get(id).abilities;
 			if (gen >= 5) {
 				if (abilities['1']) {
