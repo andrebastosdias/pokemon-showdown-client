@@ -33,6 +33,9 @@
 				if (this.curTeam.format.includes('legends')) {
 					this.curTeam.dex = Dex.mod('gen8legends');
 				}
+				if (this.curTeam.format.includes('runbun') || this.curTeam.format.includes('runandbun')) {
+					this.curTeam.dex = Dex.mod('gen8runandbun');
+				}
 				Storage.activeSetList = this.curSetList;
 			}
 		},
@@ -761,6 +764,9 @@
 			}
 			if (this.curTeam.format.includes('legends')) {
 				this.curTeam.dex = Dex.mod('gen8legends');
+			}
+			if (this.curTeam.format.includes('runbun') || this.curTeam.format.includes('runandbun')) {
+				this.curTeam.dex = Dex.mod('gen8runandbun');
 			}
 			Storage.activeSetList = this.curSetList = Storage.unpackTeam(this.curTeam.team);
 			this.curTeamIndex = i;
@@ -1618,6 +1624,9 @@
 			}
 			if (this.curTeam.format.includes('legends')) {
 				this.curTeam.dex = Dex.mod('gen8legends');
+			}
+			if (this.curTeam.format.includes('runbun') || this.curTeam.format.includes('runandbun')) {
+				this.curTeam.dex = Dex.mod('gen8runandbun');
 			}
 			this.save();
 			if (this.curTeam.gen === 5 && !Dex.loadedSpriteData['bw']) Dex.loadSpriteData('bw');
@@ -3298,6 +3307,8 @@
 				if (baseFormat.substr(0, 3) === 'gen') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 4) === 'bdsp') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 7) === 'legends') baseFormat = baseFormat.substr(7);
+				if (baseFormat.substr(0, 6) === 'runbun') baseFormat = baseFormat.substr(6);
+				if (baseFormat.substr(0, 9) === 'runandbun') baseFormat = baseFormat.substr(9);
 				if (baseFormat.substr(0, 8) === 'pokebank') baseFormat = baseFormat.substr(8);
 				if (baseFormat.substr(0, 6) === 'natdex') baseFormat = baseFormat.substr(6);
 				if (baseFormat.substr(0, 11) === 'nationaldex') baseFormat = baseFormat.substr(11);
@@ -3334,6 +3345,8 @@
 				if (baseFormat.substr(0, 3) === 'gen') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 4) === 'bdsp') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 7) === 'legends') baseFormat = baseFormat.substr(7);
+				if (baseFormat.substr(0, 6) === 'runbun') baseFormat = baseFormat.substr(6);
+				if (baseFormat.substr(0, 9) === 'runandbun') baseFormat = baseFormat.substr(9);
 				if (baseFormat.substr(0, 8) === 'pokebank') baseFormat = baseFormat.substr(8);
 				if (baseFormat.substr(0, 6) === 'natdex') baseFormat = baseFormat.substr(6);
 				if (baseFormat.substr(0, 11) === 'nationaldex') baseFormat = baseFormat.substr(11);
@@ -3565,6 +3578,8 @@
 				if (baseFormat.substr(0, 3) === 'gen') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 4) === 'bdsp') baseFormat = baseFormat.substr(4);
 				if (baseFormat.substr(0, 7) === 'legends') baseFormat = baseFormat.substr(7);
+				if (baseFormat.substr(0, 6) === 'runbun') baseFormat = baseFormat.substr(6);
+				if (baseFormat.substr(0, 9) === 'runandbun') baseFormat = baseFormat.substr(9);
 				if (baseFormat.substr(0, 8) === 'pokebank') baseFormat = baseFormat.substr(8);
 				if (baseFormat.substr(0, 6) === 'natdex') baseFormat = baseFormat.substr(6);
 				if (baseFormat.substr(0, 11) === 'nationaldex') baseFormat = baseFormat.substr(11);
