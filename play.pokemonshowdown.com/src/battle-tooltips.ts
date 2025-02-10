@@ -2562,7 +2562,8 @@ class BattleStatGuesser {
 			this.formatid.includes('metronomebattle') ||
 			this.formatid.endsWith('norestrictions')
 		);
-		this.supportsEVs = !this.formatid.includes('letsgo') && !this.formatid.includes('legends');
+		this.supportsEVs = !this.formatid.includes('letsgo') && !this.formatid.includes('legends') &&
+			!this.formatid.includes('runbun');
 		this.supportsAVs = this.formatid.includes('letsgo') && this.formatid.endsWith('norestrictions');
 	}
 	guess(set: PokemonSet) {
