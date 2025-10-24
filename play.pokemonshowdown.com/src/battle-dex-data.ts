@@ -546,6 +546,9 @@ export const BattlePokemonIconIndexes: { [id: string]: number } = {
 	inteleongmax: 1320 + 81,
 	urshifugmax: 1320 + 82,
 	urshifurapidstrikegmax: 1320 + 83,
+	// placeholder
+	floettemega: 1032 + 98,
+	zygardemega: 1032 + 139,
 
 	// CAP
 	syclant: 1512 + 0,
@@ -626,6 +629,8 @@ export const BattlePokemonIconIndexes: { [id: string]: number } = {
 	shox: 1512 + 75,
 	chuggon: 1512 + 76,
 	draggalong: 1512 + 77,
+	ramnarok: 1512 + 78,
+	ramnarokradiant: 1512 + 79,
 };
 
 export const BattlePokemonIconIndexesLeft: { [id: string]: number } = {
@@ -736,6 +741,8 @@ export const BattlePokemonIconIndexesLeft: { [id: string]: number } = {
 	necrozmaultra: 1404 + 103,
 	stakataka: 1404 + 104,
 	blacephalon: 1404 + 105,
+	// placeholder
+	zygardemega: 1404 + 83,
 };
 
 export const BattleAvatarNumbers: { [k: string]: string } = {
@@ -1232,6 +1239,7 @@ export class Move implements Effect {
 	readonly pressureTarget: MoveTarget;
 	readonly flags: Readonly<MoveFlags>;
 	readonly critRatio: number;
+	readonly damage?: number | 'level' | false | null;
 
 	readonly desc: string;
 	readonly shortDesc: string;
@@ -1273,6 +1281,7 @@ export class Move implements Effect {
 		this.pressureTarget = data.pressureTarget || this.target;
 		this.flags = data.flags || {};
 		this.critRatio = data.critRatio === 0 ? 0 : (data.critRatio || 1);
+		this.damage = data.damage;
 
 		// TODO: move to text.js
 		this.desc = data.desc;
@@ -1504,7 +1513,7 @@ export class Species implements Effect {
 	readonly isPrimal: boolean;
 	readonly canGigantamax: boolean;
 	readonly cannotDynamax: boolean;
-	readonly forceTeraType: TypeName;
+	readonly requiredTeraType: TypeName;
 	readonly battleOnly: string | string[] | undefined;
 	readonly isNonstandard: string | null;
 	readonly unreleasedHidden: boolean | 'Past';
@@ -1524,6 +1533,7 @@ export class Species implements Effect {
 		this.spriteid = baseId + this.formeid;
 		if (this.spriteid.endsWith('totem')) this.spriteid = this.spriteid.slice(0, -5);
 		if (this.spriteid === 'greninja-bond') this.spriteid = 'greninja';
+		if (this.spriteid === 'rockruff-dusk') this.spriteid = 'rockruff';
 		if (this.spriteid === 'arceus-legend') this.spriteid = 'arceus';
 		if (this.spriteid.endsWith('-')) this.spriteid = this.spriteid.slice(0, -1);
 		this.baseForme = data.baseForme || '';
@@ -1561,7 +1571,7 @@ export class Species implements Effect {
 		this.isPrimal = !!(this.forme && this.formeid === '-primal');
 		this.canGigantamax = !!data.canGigantamax;
 		this.cannotDynamax = !!data.cannotDynamax;
-		this.forceTeraType = data.forceTeraType || '';
+		this.requiredTeraType = data.requiredTeraType || '';
 		this.battleOnly = data.battleOnly || (this.isMega ? this.baseSpecies : undefined);
 		this.isNonstandard = data.isNonstandard || null;
 		this.unreleasedHidden = data.unreleasedHidden || false;
