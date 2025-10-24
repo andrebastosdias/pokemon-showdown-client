@@ -1290,7 +1290,7 @@
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isLegends = this.curTeam.format.includes('legends');
 			var isLegendsArceus = isLegends && this.curTeam.gen === 8;
-«			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 			var buf = '<li value="' + i + '">';
 			if (!set.species) {
 				if (this.deletedSet) {
