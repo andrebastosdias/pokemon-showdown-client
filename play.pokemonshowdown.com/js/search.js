@@ -347,7 +347,7 @@
 		buf += '</span> ';
 
 		// abilities
-		if (gen >= 3 && !(this.engine && (this.engine.dex.modid === 'gen7letsgo' || this.engine.dex.modid === 'gen8legends'))) {
+		if (gen >= 3 && !(this.engine && (this.engine.dex.modid === 'gen7letsgo' || this.engine.dex.modid.includes('legends')))) {
 			var abilities = pokemon.abilities;
 			if (gen >= 5) {
 				if (abilities['1']) {

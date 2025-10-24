@@ -664,7 +664,8 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		}
 		if (format.includes('legends')) {
 			this.formatType = 'legends';
-			this.dex = Dex.mod('gen8legends' as ID);
+			this.dex = Dex.mod(`gen${this.dex.gen}legends` as ID);
+			format = format.slice(7) as ID;
 		}
 		if (format.includes('bw1')) {
 			this.formatType = 'bw1';
@@ -707,12 +708,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		if (format.endsWith('draft')) {
 			format = format.slice(0, -5) as ID;
 			if (!format) format = 'anythinggoes' as ID;
-		}
-		if (format.includes('legendsza')) {
-			this.formatType = 'legendsza';
-			this.dex = Dex.mod('gen9legendsou' as ID);
-			format = format.slice(9) as ID;
-			if (!format) format = 'ou' as ID;
 		}
 		this.format = format;
 
@@ -806,11 +801,10 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	protected firstLearnsetid(speciesid: ID) {
 		let table = BattleTeambuilderTable;
 		if (this.formatType?.startsWith('bdsp')) table = table['gen8bdsp'];
-		if (this.formatType === 'legends') table = table['gen8legends'];
+		if (this.formatType === 'legends') table = table[`gen${this.dex.gen}legends`];
 		if (this.formatType === 'letsgo') table = table['gen7letsgo'];
 		if (this.formatType === 'bw1') table = table['gen5bw1'];
 		if (this.formatType === 'rs') table = table['gen3rs'];
-		if (this.formatType === 'legendsza') table = table['gen9legendsou'];
 		if (speciesid in table.learnsets) return speciesid;
 		const species = this.dex.species.get(speciesid);
 		if (!species.exists) return '' as ID;
@@ -878,7 +872,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		while (learnsetid) {
 			let table = BattleTeambuilderTable;
 			if (this.formatType?.startsWith('bdsp')) table = table['gen8bdsp'];
-			if (this.formatType === 'legends') table = table['gen8legends'];
+			if (this.formatType === 'legends') table = table[`gen${gen}legends`];
 			if (this.formatType === 'letsgo') table = table['gen7letsgo'];
 			if (this.formatType === 'bw1') table = table['gen5bw1'];
 			if (this.formatType === 'rs') table = table['gen3rs'];
@@ -905,7 +899,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			this.formatType === 'letsgo' ? 'gen7letsgo' :
 			this.formatType === 'bdsp' ? 'gen8bdsp' :
 			this.formatType === 'bdspdoubles' ? 'gen8bdspdoubles' :
-			this.formatType === 'legends' ? 'gen8legends' :
+			this.formatType === 'legends' ? `gen${gen}legends` :
 			this.formatType === 'bw1' ? 'gen5bw1' :
 			this.formatType === 'rs' ? 'gen3rs' :
 			this.formatType === 'nfe' ? `gen${gen}nfe` :
@@ -1042,7 +1036,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		} else if (this.formatType?.startsWith('bdsp')) {
 			table = table['gen8' + this.formatType];
 		} else if (this.formatType === 'legends') {
-			table = table['gen8legends'];
+			table = table[`gen${dex.gen}legends`];
 		} else if (this.formatType === 'letsgo') {
 			table = table['gen7letsgo'];
 		} else if (this.formatType === 'bw1') {
@@ -1389,7 +1383,7 @@ class BattleItemSearch extends BattleTypedSearch<'item'> {
 		if (this.formatType?.startsWith('bdsp')) {
 			table = table['gen8bdsp'];
 		} else if (this.formatType === 'legends') {
-			table = table['gen8legends'];
+			table = table[`gen${this.dex.gen}legends`];
 		} else if (this.formatType === 'bw1') {
 			table = table['gen5bw1'];
 		} else if (this.formatType === 'rs') {
@@ -1781,7 +1775,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		let gen = `${dex.gen}`;
 		let lsetTable = BattleTeambuilderTable;
 		if (this.formatType?.startsWith('bdsp')) lsetTable = lsetTable['gen8bdsp'];
-		if (this.formatType === 'legends') lsetTable = lsetTable['gen8legends'];
+		if (this.formatType === 'legends') lsetTable = lsetTable[`gen${gen}legends`];
 		if (this.formatType === 'letsgo') lsetTable = lsetTable['gen7letsgo'];
 		if (this.formatType === 'bw1') lsetTable = lsetTable['gen5bw1'];
 		if (this.formatType === 'rs') lsetTable = lsetTable['gen3rs'];
@@ -1833,7 +1827,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 						continue;
 					}
 					if (
-						format.includes('skybattle') && BattleTeambuilderTable['gen6'].nonstandardMoves.includes(moveid)
+						format.includes('skybattle') && BattleTeambuilderTable['gen6'].skyBattleNonstandardMoves.includes(moveid)
 					) {
 						continue;
 					}
