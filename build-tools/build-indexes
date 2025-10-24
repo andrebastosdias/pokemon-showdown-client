@@ -334,7 +334,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const isLetsGo = (genIdent === 7.1);
 		const isBDSP = (genIdent === 8.6 || genIdent === -8.6);
 		const isLegends = (genIdent === 8.8);
-		const isRunAndBun = genIdent === 8.801;
 		const isMetBattle = ('' + genIdent).endsWith('.2');
 		const isNFE = ('' + genIdent).endsWith('.3');
 		const isLC = ('' + genIdent).endsWith('.7');
@@ -356,7 +355,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			if (isLetsGo) genStr += 'letsgo';
 			if (isBDSP) genStr += 'bdsp';
 			if (isLegends) genStr += 'legends';
-			if (isRunAndBun) genStr += 'runandbun';
 			if (isPreDLC) genStr += 'predlc';
 			if (isSVDLC1) genStr += 'dlc1';
 			if (isStadium) genStr += 'stadium' + (genNum > 1 ? genNum : '');
@@ -594,14 +592,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen8legends'].overrideTier = overrideTier;
 			BattleTeambuilderTable['gen8legends'].monotypeBans = monotypeBans;
 			BattleTeambuilderTable['gen8legends'].formatSlices = formatSlices;
-		} else if (isRunAndBun) {
-			BattleTeambuilderTable[gen] = {};
-			BattleTeambuilderTable[gen].learnsets = {};
-			BattleTeambuilderTable[gen].tiers = tiers;
-			BattleTeambuilderTable[gen].items = items;
-			BattleTeambuilderTable[gen].overrideTier = overrideTier;
-			BattleTeambuilderTable[gen].monotypeBans = monotypeBans;
-			BattleTeambuilderTable[gen].formatSlices = formatSlices;
 		} else if (isVGC) {
 			BattleTeambuilderTable[gen + 'vgc'] = {};
 			BattleTeambuilderTable[gen + 'vgc'].tiers = tiers;
@@ -1097,16 +1087,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen8legends'].learnsets[id][moveid] = '8g';
 		}
 	}
-	const RunAndBunLearnsets = Dex.mod('gen8runandbun').data.Learnsets;
-	for (const id in RunAndBunLearnsets) {
-		const species = Dex.mod('gen8runandbun').species.get(id);
-		if (species.isNonstandard && !['Unobtainable', 'CAP'].includes(species.isNonstandard)) continue;
-		const learnset = RunAndBunLearnsets[id].learnset;
-		BattleTeambuilderTable['gen8runandbun'].learnsets[id] = {};
-		for (const moveid in learnset) {
-			BattleTeambuilderTable['gen8runandbun'].learnsets[id][moveid] = '8g';
-		}
-	}
 	const SSDLC1Learnsets = Dex.mod('gen8dlc1').data.Learnsets;
 	for (const id in SSDLC1Learnsets) {
 		const learnset = SSDLC1Learnsets[id].learnset;
@@ -1339,7 +1319,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	// Mods
 	//
 
-	for (const mod of ['gen3rs', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen8legends', 'gen8runandbun', 'gen9ssb']) {
+	for (const mod of ['gen3rs', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen8legends', 'gen9ssb']) {
 		const modDex = Dex.mod(mod);
 		const modData = modDex.data;
 		const parentDex = Dex.forGen(modDex.gen);
