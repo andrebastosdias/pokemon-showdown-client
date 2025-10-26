@@ -432,6 +432,13 @@ class PSTeams extends PSStreamModel<'team' | 'format'> {
 		if (this.byKey[team.key]) team.key = this.getKey(team.name);
 		this.byKey[team.key] = team;
 	}
+	spliceIn(index: number, teams: Team[]) {
+		for (const team of teams) {
+			team.key ||= this.getKey(team.name);
+			this.byKey[team.key] = team;
+		}
+		this.list.splice(index, 0, ...teams);
+	}
 	unpackOldBuffer(buffer: string) {
 		PS.alert(`Your team storage format is too old for PS. You'll need to upgrade it at https://${Config.routes.client}/recoverteams.html`);
 		this.list = [];
@@ -1634,6 +1641,14 @@ export class PSRoom extends PSStreamModel<Args | null> implements RoomOptions {
 				this.add('||/showbattles - Receive links to new battles in Lobby.');
 				this.add('||/hidebattles - Ignore links to new battles in Lobby.');
 				return;
+			case 'ffto':
+			case 'fastforwardto':
+				this.add('||/ffto [turn] - Skip to turn [turn] in the current battle.');
+				this.add('||/ffto +[turn] - Skip forward [turn] turns.');
+				this.add('||/ffto -[turn] - Skip backward [turn] turns.');
+				this.add('||/ffto 0 - Skip to the start of the battle.');
+				this.add('||/ffto end - Skip to the end of the battle.');
+				return;
 			case 'unpackhidden':
 			case 'packhidden':
 				this.add('||/unpackhidden - Suppress hiding locked or banned users\' chat messages after the fact.');
@@ -2382,8 +2397,8 @@ export const PS = new class extends PSModel {
 		});
 	}
 	prompt(message: string, opts: {
-		defaultValue?: string, okButton?: string, cancelButton?: string, type?: 'text' | 'password' | 'number',
-		otherButtons?: preact.ComponentChildren, parentElem?: HTMLElement,
+		defaultValue?: string, okButton?: string, cancelButton?: string, type?: 'text' | 'password' | 'number' | 'numeric',
+		otherButtons?: preact.ComponentChildren, parentElem?: HTMLElement | null,
 	} = {}): Promise<string | null> {
 		opts.cancelButton ??= 'Cancel';
 		return new Promise(resolve => {
