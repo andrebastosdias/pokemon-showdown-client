@@ -1543,6 +1543,8 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 			if (['megadrain', 'teleport'].includes(id)) return true;
 		}
 
+		if (this.formatType === 'legends') return true;
+
 		if (this.formatType === 'metronome') {
 			if (id === 'metronome') return true;
 		}
