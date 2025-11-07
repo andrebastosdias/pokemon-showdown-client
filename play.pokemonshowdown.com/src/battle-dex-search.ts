@@ -665,7 +665,9 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		if (format.includes('legends')) {
 			this.formatType = 'legends';
 			this.dex = Dex.mod(`gen${this.dex.gen}legends` as ID);
-			format = format.slice(7) as ID;
+			if (this.dex.gen === 8) {
+				format = format.slice(7) as ID;
+			}
 		}
 		if (format.includes('bw1')) {
 			this.formatType = 'bw1';
@@ -1014,6 +1016,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		const isVGCOrBS = format.startsWith('battlespot') || format.startsWith('bss') ||
 			format.startsWith('battlestadium') || format.startsWith('vgc');
 		const isHackmons = format.includes('hackmons') || format.endsWith('bh');
+		const isLegendsZa = format.startsWith('legends') && this.dex.gen === 9;
 		let isDoublesOrBS = isVGCOrBS || this.formatType?.includes('doubles');
 		const dex = this.dex;
 
@@ -1098,12 +1101,13 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		if (format === 'ubers' || format === 'uber' || format === 'ubersuu' || format === 'nationaldexdoubles' ||
 			format === 'inversebattle' || format === 'skybattle') {
 			tierSet = tierSet.slice(slices.Uber);
-		} else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType)) {
-			if (format.endsWith('series13') || format.endsWith('regj') || isHackmons) {
+		} else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType) || isLegendsZa) {
+			if (format.endsWith('series13') || format.endsWith('regj') || isHackmons || format === 'legendsnorestrictions') {
 				// Show Mythicals
 			} else if (
 				format === 'vgc2010' || format === 'vgc2016' || format.startsWith('vgc2019') ||
-				format === 'vgc2022' || format.endsWith('regg') || format.endsWith('regi')
+				format === 'vgc2022' || format.endsWith('regg') || format.endsWith('regi') ||
+				format === 'legendscasualrules'
 			) {
 				tierSet = tierSet.slice(slices["Restricted Legendary"]);
 			} else {

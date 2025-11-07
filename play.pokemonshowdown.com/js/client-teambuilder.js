@@ -3480,7 +3480,7 @@
 
 			if (this.curTeam.format === 'gen7hiddentype') return;
 
-			var minAtk = true;
+			var minAtk = !this.curTeam.format.includes('legends');
 			// only available through an event with 31 Atk IVs
 			if (set.ability === 'Battle Bond' || ['Koraidon', 'Miraidon', 'Gimmighoul-Roaming'].includes(set.species)) minAtk = false;
 			var hpModulo = (this.curTeam.gen >= 6 ? 2 : 4);

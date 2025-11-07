@@ -274,7 +274,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const isLetsGo = (genIdent === 7.1);
 		const isBDSP = (genIdent === 8.6 || genIdent === -8.6);
 		const isLegendsArceus = genIdent === 8.33;
-		const isLegendsZA = genIdent === 9.33;
+		const isLegendsZa = genIdent === 9.33;
 		const isMetBattle = ('' + genIdent).endsWith('.2');
 		const isNFE = ('' + genIdent).endsWith('.3');
 		const isLC = ('' + genIdent).endsWith('.7');
@@ -296,7 +296,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			if (isSSDLC1) genStr += 'dlc1';
 			if (isLetsGo) genStr += 'letsgo';
 			if (isBDSP) genStr += 'bdsp';
-			if (isLegendsArceus || isLegendsZA) genStr += 'legends';
+			if (isLegendsArceus || isLegendsZa) genStr += 'legends';
 			if (isPreDLC) genStr += 'predlc';
 			if (isSVDLC1) genStr += 'dlc1';
 			if (isLegendsZAOu) genStr += 'legendsou';
@@ -380,6 +380,16 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 					if (species.forme && !['Alola', 'Mega', 'Mega-X', 'Mega-Y', 'Starter'].includes(species.forme)) return 'Illegal';
 					if (species.name === 'Pikachu-Alola') return 'Illegal';
 					return species.tier;
+				}
+				if (isLegendsZa) {
+					if (species.isNonstandard) return 'Illegal';
+					if (baseSpecies.tags.includes('Mythical')) return 'Mythical';
+					if (baseSpecies.tags.includes('Restricted Legendary')) return 'Restricted Legendary';
+					if (species.nfe) {
+						if (species.prevo.length === 0) return 'LC';
+						return 'NFE';
+					}
+					return 'Regular';
 				}
 				if (isVGC) {
 					if (species.isNonstandard && species.isNonstandard !== 'Gigantamax') return 'Illegal';
@@ -544,7 +554,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen8legends'].overrideTier = overrideTier;
 			BattleTeambuilderTable['gen8legends'].monotypeBans = monotypeBans;
 			BattleTeambuilderTable['gen8legends'].formatSlices = formatSlices;
-		} else if (isLegendsZA) {
+		} else if (isLegendsZa) {
 			BattleTeambuilderTable['gen9legends'] = {};
 			BattleTeambuilderTable['gen9legends'].learnsets = {};
 			BattleTeambuilderTable['gen9legends'].tiers = tiers;
@@ -620,7 +630,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		}
 
 		const tierOrder = (() => {
-			if (isVGC || isGen9BH) {
+			if (isVGC || isGen9BH || isLegendsZa) {
 				return ["Mythical", "Restricted Legendary", "Regular", "NFE", "LC"];
 			}
 			if (isRS) {
