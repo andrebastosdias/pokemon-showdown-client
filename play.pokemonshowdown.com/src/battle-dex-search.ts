@@ -1102,12 +1102,13 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 			format === 'inversebattle' || format === 'skybattle') {
 			tierSet = tierSet.slice(slices.Uber);
 		} else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType) || isLegendsZa) {
-			if (format.endsWith('series13') || format.endsWith('regj') || isHackmons || format === 'legendsnorestrictions') {
+			if (format.endsWith('series13') || format.endsWith('regj') || isHackmons ||
+				(isLegendsZa && format !== 'legendsnormalrules')
+			) {
 				// Show Mythicals
 			} else if (
 				format === 'vgc2010' || format === 'vgc2016' || format.startsWith('vgc2019') ||
-				format === 'vgc2022' || format.endsWith('regg') || format.endsWith('regi') ||
-				format === 'legendscasualrules'
+				format === 'vgc2022' || format.endsWith('regg') || format.endsWith('regi')
 			) {
 				tierSet = tierSet.slice(slices["Restricted Legendary"]);
 			} else {
