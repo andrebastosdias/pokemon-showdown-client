@@ -51,8 +51,14 @@ export class PSSearchResults extends preact.Component<{
 			<button class={`sortcol movetypesortcol${sortCol === 'type' ? ' cur' : ''}`} data-sort="type">Type</button>
 			<button class={`sortcol movetypesortcol${sortCol === 'category' ? ' cur' : ''}`} data-sort="category">Cat</button>
 			<button class={`sortcol powersortcol${sortCol === 'power' ? ' cur' : ''}`} data-sort="power">Pow</button>
-			<button class={`sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}`} data-sort="accuracy">Acc</button>
-			<button class={`sortcol ppsortcol${sortCol === 'pp' ? ' cur' : ''}`} data-sort="pp">PP</button>
+			{ this.props.search.dex.modid === 'gen9legends' ? (
+				<button class={`sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}`} data-sort="accuracy">Cool</button>
+			) : (
+				<>
+				<button class={`sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}`} data-sort="accuracy">Acc</button>
+				<button class={`sortcol ppsortcol${sortCol === 'pp' ? ' cur' : ''}`} data-sort="pp">PP</button>
+				</>
+			)}
 		</div></li>;
 	}
 
@@ -262,13 +268,20 @@ export class PSSearchResults extends preact.Component<{
 			<span class="col labelcol">
 				{move.category !== 'Status' ? [<em>Power</em>, <br />, move.basePower || '\u2014'] : ''}
 			</span>
-			<span class="col widelabelcol">
-				<em>Accuracy</em><br />{move.accuracy && move.accuracy !== true ? `${move.accuracy}%` : '\u2014'}
-			</span>
-			<span class="col pplabelcol">
-				<em>PP</em><br />{pp}
-			</span>
-
+			{ search.dex.modid === 'gen9legends' ? (
+				<span class="col widelabelcol">
+					<em>Cooldown</em><br />{move.accuracy}
+				</span>
+			) : (
+				<>
+				<span class="col widelabelcol">
+					<em>Accuracy</em><br />{move.accuracy && move.accuracy !== true ? `${move.accuracy}%` : '\u2014'}
+				</span>
+				<span class="col pplabelcol">
+					<em>PP</em><br />{pp}
+				</span>
+				</>
+			)}
 			<span class="col movedesccol">{move.shortDesc}</span>
 
 		</a></li>;

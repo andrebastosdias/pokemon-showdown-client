@@ -571,7 +571,7 @@ export class TeamEditorState extends PSModel {
 	}
 	prefersMinStats(set: Dex.PokemonSet) {
 		let minSpe = !set.evs?.spe && set.moves.includes('Gyro Ball');
-		let minAtk = !set.evs?.atk;
+		let minAtk = !set.evs?.atk && !this.format.includes('legends');
 
 		// only available through an event with 31 Spe IVs
 		if (set.species.startsWith('Terapagos')) minSpe = false;
