@@ -347,9 +347,12 @@
 		buf += '</span> ';
 
 		// abilities
-		if (gen >= 3 && !(this.engine && (this.engine.dex.modid === 'gen7letsgo' || this.engine.dex.modid.includes('legends')))) {
+		if (gen >= 3 && !(this.engine && this.engine.dex.modid === 'gen7letsgo')) {
 			var abilities = pokemon.abilities;
-			if (gen >= 5) {
+			if (this.engine.dex.modid.includes('legends')) {
+				buf += '<span class="col abilitycol">' + (abilities['0'] !== 'No Ability' ? abilities['0'] : '') + '</span>';
+				buf += '<span class="col abilitycol"></span>';
+			} else if (gen >= 5) {
 				if (abilities['1']) {
 					buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
 						abilities['1'] + '</span>';

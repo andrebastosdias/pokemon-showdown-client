@@ -437,7 +437,9 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				return species.tier;
 			})();
 			overrideTier[species.id] = speciesTier;
-			if (species.forme) {
+			if (isLegendsArceus) {
+				if (species.name === 'Cherrim') continue;
+			} else if (species.forme) {
 				if (
 					[
 						'Aegislash', 'Castform', 'Cherrim', 'Cramorant', 'Eiscue', 'Meloetta', 'Mimikyu', 'Minior', 'Morpeko', 'Ramnarok', 'Wishiwashi',
