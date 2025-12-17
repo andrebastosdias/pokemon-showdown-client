@@ -608,6 +608,7 @@ class PSUser extends PSStreamModel<PSLoginState | null> {
 	group = '';
 	userid = "" as ID;
 	named = false;
+	away = false;
 	registered: { name: string, userid: ID } | null = null;
 	avatar = "lucas";
 	challstr = '';
@@ -623,6 +624,7 @@ class PSUser extends PSStreamModel<PSLoginState | null> {
 		this.userid = toID(name);
 		this.named = named;
 		this.avatar = avatar;
+		this.away = fullName.endsWith('@!');
 		this.update(null);
 		if (loggingIn) {
 			for (const roomid in PS.rooms) {
@@ -968,7 +970,7 @@ export class PSRoom extends PSStreamModel<Args | null> implements RoomOptions {
 	 * the room isn't connected to the game server but to something
 	 * else.
 	 *
-	 * `true` for DMs for historical reasons (TODO: fix)
+	 * 'client-only' for DMs
 	 */
 	connected: 'autoreconnect' | 'client-only' | 'expired' | boolean = false;
 	/**
@@ -1062,8 +1064,7 @@ export class PSRoom extends PSStreamModel<Args | null> implements RoomOptions {
 		const room = PS.rooms[this.id] as ChatRoom;
 		const lastSeenTimestamp = PS.prefs.logtimes?.[PS.server.id]?.[this.id] || 0;
 		const lastMessageTime = +(room.lastMessage?.[1] || 0);
-		if ((lastMessageTime - room.timeOffset) <= lastSeenTimestamp) return;
-		this.isSubtleNotifying = true;
+		this.isSubtleNotifying = !((lastMessageTime + room.timeOffset) <= lastSeenTimestamp);
 		PS.update();
 	}
 	dismissNotificationAt(i: number) {
@@ -1814,7 +1815,7 @@ export const PS = new class extends PSModel {
 		"user-*": "*popup",
 		"viewuser-*": "*popup",
 		"volume": "*popup",
-		"options": "*popup",
+		"options": "*semimodal-popup",
 		"*": "*right",
 		"battle-*": "*",
 		"battles": "*right",
@@ -1825,7 +1826,29 @@ export const PS = new class extends PSModel {
 		"ladder-*": "*",
 		"view-*": "*",
 		"login": "*semimodal-popup",
-		"help-*": "chat",
+		"help-*": "*right",
+		"tourpopout": "*semimodal-popup",
+		"groupchat-*": "*right",
+		"users": "*popup",
+		"useroptions-*": "*popup",
+		"userlist": "*semimodal-popup",
+		"avatars": "*semimodal-popup",
+		"changepassword": "*semimodal-popup",
+		"register": "*semimodal-popup",
+		"forfeitbattle": "*semimodal-popup",
+		"replaceplayer": "*semimodal-popup",
+		"changebackground": "*semimodal-popup",
+		"confirmleaveroom": "*semimodal-popup",
+		"chatformatting": "*semimodal-popup",
+		"popup-*": "*semimodal-popup",
+		"roomtablist": "*semimodal-popup",
+		"battleoptions": "*semimodal-popup",
+		"battletimer": "*semimodal-popup",
+		"rules-*": "*modal-popup",
+		"resources": "*",
+		"game-*": "*",
+		"teamstorage-*": "*semimodal-popup",
+		"viewteam-*": "*",
 	});
 	/** List of rooms on the left side of the top tabbar */
 	leftRoomList: RoomID[] = [];
@@ -2378,7 +2401,7 @@ export const PS = new class extends PSModel {
 		}
 		return this.focusRoom(rooms[index + 1]);
 	}
-	alert(message: string, opts: { okButton?: string, parentElem?: HTMLElement, width?: number } = {}) {
+	alert(message: string, opts: { okButton?: string, parentElem?: HTMLElement | null, width?: number } = {}) {
 		this.join(`popup-${this.popups.length}` as RoomID, {
 			args: { message, ...opts, parentElem: null },
 			parentElem: opts.parentElem,
@@ -2433,7 +2456,7 @@ export const PS = new class extends PSModel {
 		if (options.id.startsWith('challenge-')) {
 			this.requestNotifications();
 			options.id = `dm-${options.id.slice(10)}` as RoomID;
-			options.args = { challengeMenuOpen: true };
+			options.args = { challengeMenuOpen: true, ...options.args };
 		}
 		if (options.id.startsWith('dm-')) {
 			this.requestNotifications();
@@ -2453,6 +2476,12 @@ export const PS = new class extends PSModel {
 			preexistingRoom = this.rooms[options.id];
 		}
 		if (preexistingRoom) {
+			if (options.args?.format) {
+				preexistingRoom.args = options.args;
+				if ((preexistingRoom as ChatRoom).challengeMenuOpen) {
+					options.args.format = `!!${options.args.format as string}`;
+				}
+			}
 			if (options.autofocus) {
 				if (options.args?.challengeMenuOpen) {
 					(preexistingRoom as ChatRoom).openChallenge();
