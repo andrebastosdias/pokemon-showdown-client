@@ -383,10 +383,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				}
 				if (isLegendsZa) {
 					if (species.isNonstandard) return 'Illegal';
-					if (
-						baseSpecies.tags.includes('Mythical') || baseSpecies.tags.includes('Restricted Legendary') ||
-						baseSpecies.tags.includes('Sub-Legendary')
-					) return 'Restricted Legendary';
+					if (baseSpecies.tags.includes('Restricted Legendary') || baseSpecies.name === 'Diancie') return 'Restricted Legendary';
 					if (species.nfe) {
 						if (species.prevo.length === 0) return 'LC';
 						return 'NFE';
