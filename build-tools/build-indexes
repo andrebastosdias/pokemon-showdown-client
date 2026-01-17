@@ -646,7 +646,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 					...metagameBans.skybattle,
 					...Object.fromEntries(skybattleBans.map(p => [p, 1])),
 				};
-				console.log(BattleTeambuilderTable[gen].metagameBans.skybattle);
 				BattleTeambuilderTable[gen].metagameBans.skybattleNonstandardMoves = [
 					'bodyslam', 'bulldoze', 'dig', 'dive', 'earthpower', 'earthquake', 'electricterrain', 'firepledge', 'fissure', 'flyingpress', 'frenzyplant', 'geomancy', 'grassknot', 'grasspledge', 'grassyterrain', 'gravity', 'heatcrash', 'heavyslam', 'ingrain', 'landswrath', 'magnitude', 'matblock', 'mistyterrain', 'mudsport', 'muddywater', 'rototiller', 'seismictoss', 'slam', 'smackdown', 'spikes', 'stomp', 'substitute', 'surf', 'thousandarrows', 'thousandwaves', 'toxicspikes', 'waterpledge', 'watersport',
 				];
