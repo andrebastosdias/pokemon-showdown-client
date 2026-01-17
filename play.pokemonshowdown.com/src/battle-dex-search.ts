@@ -1180,6 +1180,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 			'pokebilities', 'pokemoves', 'relayrace', 'revelationmons', 'sharingiscaring', 'teradonation', 'teraoverride', 'thecardgame',
 			'thelosersgame', 'trademarked', 'triples', 'typesplit', 'voltturnmayhem', 'nationaldexubersuu', 'nationaldex1v1',
 			'nationaldexaaa', 'nationaldexbh', 'nationaldexgodlygift', 'nationaldexstabmons', 'tiershift',
+			'inversebattle', 'skybattle',
 		];
 		if (dex.gen >= 6) {
 			if (
@@ -1220,7 +1221,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 				let species = dex.species.get(id);
 				if (species.battleOnly) {
 					species = dex.species.get(Array.isArray(species.battleOnly) ? species.battleOnly[0] : species.battleOnly);
-					if (table.metagameBans?.gen6skybattle && species.id in table.metagameBans.gen6skybattle) return false;
+					if (table.metagameBans?.skybattle && species.id in table.metagameBans.skybattle) return false;
 				}
 				if (!species.types.includes('Flying') && !Object.values(species.abilities).includes('Levitate')) return false;
 				return true;
@@ -1864,7 +1865,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 						continue;
 					}
 					if (
-						format.includes('skybattle') && BattleTeambuilderTable['gen6'].metagameBans?.gen6skybattleNonstandardMoves.includes(moveid)
+						format.includes('skybattle') && BattleTeambuilderTable['gen6'].metagameBans?.skybattleNonstandardMoves.includes(moveid)
 					) {
 						continue;
 					}

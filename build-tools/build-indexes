@@ -571,7 +571,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen8legends'].learnsets = {};
 			BattleTeambuilderTable['gen8legends'].tiers = tiers;
 			BattleTeambuilderTable['gen8legends'].overrideTier = overrideTier;
-			BattleTeambuilderTable['gen8legends'].monotypeBans = monotypeBans;
 			BattleTeambuilderTable['gen8legends'].formatSlices = formatSlices;
 		} else if (isLegendsZa) {
 			BattleTeambuilderTable['gen9legends'] = {};
@@ -639,15 +638,16 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				BattleTeambuilderTable[gen].metagameBans = metagameBans;
 			}
 			if (genNum === 6) {
-				const gen6SkyBattleBans = [
+				const skybattleBans = [
 					'archen', 'chatot', 'delibird', 'dodrio', 'doduo', 'ducklett', 'farfetchd', 'fletchling', 'gengar', 'hawlucha', 'hoothoot', 'murkrow', 'natu', 'pidgey', 'pidove', 'pinsirmega', 'rufflet', 'shayminsky', 'spearow', 'starly', 'taillow', 'vullaby',
 					'altariamega', 'pidgeotmega', 'rayquazamega', 'salamencemega',
 				];
-				BattleTeambuilderTable[gen].metagameBans.gen6skybattle = {
-					...metagameBans.gen6skybattle,
-					...Object.fromEntries(gen6SkyBattleBans.map(p => [p, 1])),
+				BattleTeambuilderTable[gen].metagameBans.skybattle = {
+					...metagameBans.skybattle,
+					...Object.fromEntries(skybattleBans.map(p => [p, 1])),
 				};
-				BattleTeambuilderTable[gen].metagameBans.gen6skybattleNonstandardMoves = [
+				console.log(BattleTeambuilderTable[gen].metagameBans.skybattle);
+				BattleTeambuilderTable[gen].metagameBans.skybattleNonstandardMoves = [
 					'bodyslam', 'bulldoze', 'dig', 'dive', 'earthpower', 'earthquake', 'electricterrain', 'firepledge', 'fissure', 'flyingpress', 'frenzyplant', 'geomancy', 'grassknot', 'grasspledge', 'grassyterrain', 'gravity', 'heatcrash', 'heavyslam', 'ingrain', 'landswrath', 'magnitude', 'matblock', 'mistyterrain', 'mudsport', 'muddywater', 'rototiller', 'seismictoss', 'slam', 'smackdown', 'spikes', 'stomp', 'substitute', 'surf', 'thousandarrows', 'thousandwaves', 'toxicspikes', 'waterpledge', 'watersport',
 				];
 			}
