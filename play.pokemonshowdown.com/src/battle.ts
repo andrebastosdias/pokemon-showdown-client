@@ -1614,7 +1614,6 @@ export class Battle {
 				pp[0] += 1;
 			}
 		}
-		console.log(pp);
 		return pp;
 	}
 	animateMove(pokemon: Pokemon, move: Dex.Move, target: Pokemon | null, kwArgs: KWArgs) {
