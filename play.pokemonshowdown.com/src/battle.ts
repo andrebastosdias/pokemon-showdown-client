@@ -40,7 +40,7 @@ declare const app: { user: AnyObject, rooms: AnyObject, ignore?: AnyObject } | u
 export type EffectState = any[] & { 0: ID };
 export type WeatherState = [name: string, minTimeLeft: number, maxTimeLeft: number];
 export type HPColor = 'r' | 'y' | 'g';
-export type PPState = number | [number, number, 'values' | 'range'];
+export type PPState = number | [number, number];
 
 export class Pokemon implements PokemonDetails, PokemonHealth {
 	name = '';
@@ -341,12 +341,13 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 		this.clearMovestatuses();
 		this.side.battle.scene.clearEffects(this);
 	}
-	private mergePP(ppUsed: PPState, pp: PPState): PPState {
+	private mergePP(entry: [string, PPState], pp: PPState): PPState {
+		let ppUsed = entry[1];
 		if (typeof ppUsed === 'number') {
 			if (typeof pp === 'number') {
 				ppUsed += pp;
 			} else {
-				ppUsed = [ppUsed + pp[0], ppUsed + pp[1], pp[2]];
+				ppUsed = [ppUsed + pp[0], ppUsed + pp[1]];
 			}
 		} else {
 			if (typeof pp === 'number') {
@@ -355,9 +356,6 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 			} else {
 				ppUsed[0] += pp[0];
 				ppUsed[1] += pp[1];
-				if (ppUsed[2] === 'values' && pp[2] === 'range') {
-					ppUsed[2] = 'range';
-				}
 			}
 		}
 		if (typeof ppUsed === 'number') {
@@ -365,9 +363,11 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 		} else {
 			if (ppUsed[0] < 0) ppUsed[0] = 0;
 			if (ppUsed[1] < 0) ppUsed[1] = 0;
-			const diff = Math.abs(ppUsed[0] - ppUsed[1]);
-			if (diff === 0) ppUsed = ppUsed[0];
-			else if (diff === 1) ppUsed[2] = 'values';
+			const move = this.side.battle.dex.moves.get(entry[0]);
+			const maxpp = (move.pp === 1 || move.noPPBoosts ? move.pp : move.pp * 8 / 5);
+			if (ppUsed[0] > maxpp) ppUsed[0] = maxpp;
+			if (ppUsed[0] < ppUsed[1]) ppUsed[0] = ppUsed[1];
+			if (ppUsed[0] === ppUsed[1]) ppUsed = ppUsed[0];
 		}
 		return ppUsed;
 	}
@@ -384,7 +384,7 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 		}
 		for (const entry of this.moveTrack) {
 			if (moveName === entry[0]) {
-				entry[1] = this.mergePP(entry[1], pp);
+				entry[1] = this.mergePP(entry, pp);
 				return;
 			}
 		}
@@ -1609,15 +1609,12 @@ export class Battle {
 				}
 			} else if (canHavePressure) {
 				if (typeof pp === 'number') {
-					pp = [pp + 1, pp, 'values'];
-				} else if (pp[2] === 'values') {
-					pp[0] += 1;
-					pp[2] = 'range';
-				} else {
-					pp[0] += 1;
+					pp = [pp, pp];
 				}
+				pp[0] += 1;
 			}
 		}
+		console.log(pp);
 		return pp;
 	}
 	animateMove(pokemon: Pokemon, move: Dex.Move, target: Pokemon | null, kwArgs: KWArgs) {

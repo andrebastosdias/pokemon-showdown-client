@@ -983,8 +983,8 @@ export class BattleTooltips {
 			}).length > 4) {
 				text += `(More than 4 moves is usually a sign of Illusion Zoroark/Zorua.) `;
 			}
-			if (this.battle.gen === 3) {
-				text += `(Pressure is not visible in Gen 3, so in certain situations, more PP may have been lost than shown here.) `;
+			if (this.battle.gen === 3 && clientPokemon.moveTrack.some(([_, pp]) => typeof pp !== 'number')) {
+				text += `(Pressure is not visible in Gen 3, so in certain situations, the exact amount of PP used may be unknown.) `;
 			}
 			if (this.pokemonHasClones(clientPokemon)) {
 				text += `(Your opponent has two indistinguishable Pokémon, making it impossible for you to tell which one has which moves/ability/item.) `;
@@ -1482,10 +1482,8 @@ export class BattleTooltips {
 		if (ppUsed || moveName.startsWith('*')) {
 			if (typeof ppUsed === 'number') {
 				return `${bullet} ${move.name} <small>(${maxpp - ppUsed}/${maxpp})</small>`;
-			} else if (ppUsed[2] === 'values') {
-				return `${bullet} ${move.name} <small>(${maxpp - ppUsed[1]}/${maxpp} or ${maxpp - ppUsed[0]}/${maxpp})</small>`;
 			} else {
-				return `${bullet} ${move.name} <small>(Between ${maxpp - ppUsed[1]}/${maxpp} and ${maxpp - ppUsed[0]}/${maxpp})</small>`;
+				return `${bullet} ${move.name} <small>(Between ${maxpp - ppUsed[0]}/${maxpp} and ${maxpp - ppUsed[1]}/${maxpp})</small>`;
 			}
 		}
 		return `${bullet} ${move.name} ${showKnown ? ' <small>(revealed)</small>' : ''}`;
