@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-import { Pokemon, type Battle, type ServerPokemon } from "./battle";
+import { Pokemon, type Battle, type PPState, type ServerPokemon } from "./battle";
 import { Dex, type ModdedDex, toID, type ID } from "./battle-dex";
 import type { BattleScene } from "./battle-animations";
 import { BattleLog } from "./battle-log";
@@ -1462,7 +1462,7 @@ export class BattleTooltips {
 		return buf;
 	}
 
-	getPPUseText(moveTrackRow: [string, number], showKnown?: boolean) {
+	getPPUseText(moveTrackRow: [string, PPState], showKnown?: boolean) {
 		let [moveName, ppUsed] = moveTrackRow;
 		let move;
 		let maxpp;
@@ -1480,7 +1480,13 @@ export class BattleTooltips {
 			return `${bullet} ${move.name} <small>(0/${maxpp})</small>`;
 		}
 		if (ppUsed || moveName.startsWith('*')) {
-			return `${bullet} ${move.name} <small>(${maxpp - ppUsed}/${maxpp})</small>`;
+			if (typeof ppUsed === 'number') {
+				return `${bullet} ${move.name} <small>(${maxpp - ppUsed}/${maxpp})</small>`;
+			} else if (ppUsed[2] === 'values') {
+				return `${bullet} ${move.name} <small>(${maxpp - ppUsed[1]}/${maxpp} or ${maxpp - ppUsed[0]}/${maxpp})</small>`;
+			} else {
+				return `${bullet} ${move.name} <small>(Between ${maxpp - ppUsed[1]}/${maxpp} and ${maxpp - ppUsed[0]}/${maxpp})</small>`;
+			}
 		}
 		return `${bullet} ${move.name} ${showKnown ? ' <small>(revealed)</small>' : ''}`;
 	}
@@ -1978,7 +1984,7 @@ export class BattleTooltips {
 			value.set(20 + 20 * boostCount);
 		}
 		if (move.id === 'trumpcard') {
-			const ppLeft = 5 - this.ppUsed(move, pokemon);
+			const ppLeft = 5 - (this.ppUsed(move, pokemon) as number);
 			let basePower = 40;
 			if (ppLeft === 1) basePower = 200;
 			else if (ppLeft === 2) basePower = 80;
