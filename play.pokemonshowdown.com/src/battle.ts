@@ -3023,6 +3023,16 @@ export class Battle {
 					}
 				}
 				break;
+			// kept for backward compatibility
+			case 'lingeringaroma':
+			case 'mummy':
+				if (!kwArgs.ability) break; // if Mummy activated but failed, no ability will have been sent
+				let ability = Dex.abilities.get(kwArgs.ability);
+				this.activateAbility(target, ability.name);
+				this.activateAbility(poke, effect.name);
+				this.scene.wait(700);
+				this.activateAbility(target, effect.name, true);
+				break;
 
 			// item activations
 			case 'leppaberry':
