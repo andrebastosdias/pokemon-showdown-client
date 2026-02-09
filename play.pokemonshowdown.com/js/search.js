@@ -284,8 +284,12 @@
 		buf += '<button class="sortcol movetypesortcol' + (this.sortCol === 'type' ? ' cur' : '') + '" data-sort="type">Type</button>';
 		buf += '<button class="sortcol movetypesortcol' + (this.sortCol === 'category' ? ' cur' : '') + '" data-sort="category">Cat</button>';
 		buf += '<button class="sortcol powersortcol' + (this.sortCol === 'power' ? ' cur' : '') + '" data-sort="power">Pow</button>';
-		buf += '<button class="sortcol accuracysortcol' + (this.sortCol === 'accuracy' ? ' cur' : '') + '" data-sort="accuracy">Acc</button>';
-		buf += '<button class="sortcol ppsortcol' + (this.sortCol === 'pp' ? ' cur' : '') + '" data-sort="pp">PP</button>';
+		if (this.engine.dex.modid === 'gen9legends') {
+			buf += '<button class="sortcol accuracysortcol' + (this.sortCol === 'accuracy' ? ' cur' : '') + '" data-sort="accuracy">Cool</button>';
+		} else {
+			buf += '<button class="sortcol accuracysortcol' + (this.sortCol === 'accuracy' ? ' cur' : '') + '" data-sort="accuracy">Acc</button>';
+			buf += '<button class="sortcol ppsortcol' + (this.sortCol === 'pp' ? ' cur' : '') + '" data-sort="pp">PP</button>';
+		}
 		buf += '</div></li>';
 		return buf;
 	};
@@ -345,7 +349,10 @@
 		// abilities
 		if (gen >= 3 && !(this.engine && this.engine.dex.modid === 'gen7letsgo')) {
 			var abilities = pokemon.abilities;
-			if (gen >= 5) {
+			if (this.engine.dex.modid.includes('legends')) {
+				buf += '<span class="col abilitycol">' + (abilities['0'] !== 'No Ability' ? abilities['0'] : '') + '</span>';
+				buf += '<span class="col abilitycol"></span>';
+			} else if (gen >= 5) {
 				if (abilities['1']) {
 					buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
 						abilities['1'] + '</span>';
@@ -567,8 +574,12 @@
 		var pp = (move.pp === 1 || move.noPPBoosts ? move.pp : move.pp * 8 / 5);
 		if (this.engine && this.engine.dex.gen < 3) pp = Math.min(61, pp);
 		buf += '<span class="col labelcol">' + (move.category !== 'Status' ? ('<em>Power</em><br />' + (move.basePower || '&mdash;')) : '') + '</span> ';
-		buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
-		buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
+		if (this.engine && this.engine.dex.modid === 'gen9legends') {
+			buf += '<span class="col widelabelcol"><em>Cooldown</em><br />' + move.accuracy + '</span> ';
+		} else {
+			buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
+			buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
+		}
 
 		// desc
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc) + '</span> ';
@@ -604,8 +615,12 @@
 		var pp = (move.pp === 1 || move.noPPBoosts ? move.pp : move.pp * 8 / 5);
 		if (this.engine && this.engine.dex.gen < 3) pp = Math.min(61, pp);
 		buf += '<span class="col labelcol">' + (move.category !== 'Status' ? ('<em>Power</em><br />' + (move.basePower || '&mdash;')) : '') + '</span> ';
-		buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
-		buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
+		if (this.engine && this.engine.dex.modid === 'gen9legends') {
+			buf += '<span class="col widelabelcol"><em>Cooldown</em><br />' + move.accuracy + '</span> ';
+		} else {
+			buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
+			buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
+		}
 
 		// desc
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc || move.desc) + '</span> ';
@@ -641,8 +656,12 @@
 
 		// power, accuracy, pp
 		buf += '<span class="col labelcol">' + (move.category !== 'Status' ? ('<em>Power</em><br />' + (move.basePower || '&mdash;')) : '') + '</span> ';
-		buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
-		buf += '<span class="col pplabelcol"><em>PP</em><br />' + (move.pp !== 1 ? move.pp * 8 / 5 : move.pp) + '</span> ';
+		if (this.engine && this.engine.dex.modid === 'gen9legends') {
+			buf += '<span class="col widelabelcol"><em>Cooldown</em><br />' + move.accuracy + '</span> ';
+		} else {
+			buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
+			buf += '<span class="col pplabelcol"><em>PP</em><br />' + (move.pp !== 1 ? move.pp * 8 / 5 : move.pp) + '</span> ';
+		}
 
 		// desc
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc || move.desc) + '</span> ';

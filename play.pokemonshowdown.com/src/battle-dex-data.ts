@@ -1576,6 +1576,7 @@ export class Species implements Effect {
 		if (this.spriteid.endsWith('totem')) this.spriteid = this.spriteid.slice(0, -5);
 		if (this.spriteid === 'greninja-bond') this.spriteid = 'greninja';
 		if (this.spriteid === 'rockruff-dusk') this.spriteid = 'rockruff';
+		if (this.spriteid === 'arceus-legend') this.spriteid = 'arceus';
 		if (this.spriteid.endsWith('-')) this.spriteid = this.spriteid.slice(0, -1);
 		this.baseForme = data.baseForme || '';
 

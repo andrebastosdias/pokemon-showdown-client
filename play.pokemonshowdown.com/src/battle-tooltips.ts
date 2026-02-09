@@ -2566,6 +2566,7 @@ export class BattleStatGuesser {
 	ignoreEVLimits: boolean;
 	supportsEVs: boolean;
 	supportsAVs: boolean;
+	isLegendsZa: boolean;
 
 	constructor(formatid: ID) {
 		this.formatid = formatid;
@@ -2576,8 +2577,9 @@ export class BattleStatGuesser {
 			this.formatid.includes('metronomebattle') ||
 			this.formatid.endsWith('norestrictions')
 		);
-		this.supportsEVs = !this.formatid.includes('letsgo');
-		this.supportsAVs = !this.supportsEVs && this.formatid.endsWith('norestrictions');
+		this.supportsEVs = !this.formatid.includes('letsgo') && !(this.dex.gen === 8 && this.formatid.includes('legends'));
+		this.supportsAVs = this.formatid.includes('letsgo') && this.formatid.endsWith('norestrictions');
+		this.isLegendsZa = this.formatid.includes('legends') && this.dex.gen === 9;
 	}
 	guess(set: Dex.PokemonSet) {
 		let role = this.guessRole(set);
@@ -2592,7 +2594,7 @@ export class BattleStatGuesser {
 	}
 	guessRole(set: Dex.PokemonSet) {
 		if (!set) return '?';
-		if (!set.moves) return '?';
+		if (!set.moves && !this.isLegendsZa) return '?';
 
 		let moveCount = {
 			'Physical': 0,
@@ -2624,17 +2626,18 @@ export class BattleStatGuesser {
 		if (!species.exists) return '?';
 		let stats = species.baseStats;
 
-		if (set.moves.length < 1) return '?';
+		if (set.moves.length < 1 && !this.isLegendsZa) return '?';
 		let needsFourMoves = !['unown', 'ditto'].includes(species.id);
 		let hasFourValidMoves = set.moves.length >= 4 && !set.moves.includes('');
 		let moveids = set.moves.map(toID);
 		if (moveids.includes('lastresort' as ID)) needsFourMoves = false;
-		if (!hasFourValidMoves && needsFourMoves && !this.formatid.includes('metronomebattle')) {
+		if (!hasFourValidMoves && needsFourMoves && !this.formatid.includes('metronomebattle') && !this.isLegendsZa) {
 			return '?';
 		}
 
 		for (let i = 0, len = set.moves.length; i < len; i++) {
 			let move = this.dex.moves.get(set.moves[i]);
+			if (!move.exists) continue;
 			hasMove[move.id] = 1;
 			if (move.category === 'Status') {
 				if (['batonpass', 'healingwish', 'lunardance'].includes(move.id)) {
@@ -2813,6 +2816,14 @@ export class BattleStatGuesser {
 		this.moveCount = moveCount;
 		this.hasMove = hasMove;
 
+		if (this.isLegendsZa) {
+			let offenseBias: 'Physical' | 'Special' = 'Physical';
+			if (moveCount['Physical'] > moveCount['Special']) offenseBias = 'Physical';
+			else if (moveCount['Special'] > moveCount['Physical']) offenseBias = 'Special';
+			else offenseBias = stats.spa > stats.atk ? 'Special' : 'Physical';
+			return 'Bulky ' + offenseBias + ' Sweeper';
+		}
+
 		if (species.id === 'ditto') return abilityid === 'imposter' ? 'Physically Defensive' : 'Fast Bulky Support';
 		if (species.id === 'shedinja') return 'Fast Physical Sweeper';
 
@@ -2870,6 +2881,7 @@ export class BattleStatGuesser {
 		return 'Physically Defensive';
 	}
 	ensureMinEVs(evs: Dex.StatsTable, stat: Dex.StatName, min: number, evTotal: number) {
+		if (this.isLegendsZa) return evTotal;
 		if (!evs[stat]) evs[stat] = 0;
 		let diff = min - evs[stat];
 		if (diff <= 0) return evTotal;
@@ -2893,6 +2905,7 @@ export class BattleStatGuesser {
 		return evTotal; // can't do it :(
 	}
 	ensureMaxEVs(evs: Dex.StatsTable, stat: Dex.StatName, min: number, evTotal: number) {
+		if (this.isLegendsZa) return evTotal;
 		if (!evs[stat]) evs[stat] = 0;
 		let diff = evs[stat] - min;
 		if (diff <= 0) return evTotal;
@@ -3024,7 +3037,7 @@ export class BattleStatGuesser {
 				hpDivisibility = 8;
 			}
 
-			if (hpDivisibility) {
+			if (hpDivisibility && !this.isLegendsZa) {
 				while (hp < 252 && evTotal < 508 && !(stat % hpDivisibility) !== hpShouldBeDivisible) {
 					hp += 4;
 					stat = this.getStat('hp', set, hp, 1);
@@ -3082,6 +3095,15 @@ export class BattleStatGuesser {
 					if (ev) evs[secondaryStat] = ev;
 					remaining -= ev;
 				}
+				if (this.isLegendsZa) {
+					ev = remaining;
+					for (let s of (stats.def > stats.spd ? ['def', 'spd'] : ['spd', 'def']) as Dex.StatName[]) {
+						stat = this.getStat(s, set, ev);
+						while (ev > 0 && stat === this.getStat(s, set, ev - 4)) ev -= 4;
+						if (ev) evs[s] = ev;
+						remaining -= ev;
+					}
+				}
 				if (remaining && !evs['spe']) {
 					ev = remaining;
 					stat = this.getStat('spe', set, ev);
@@ -3113,6 +3135,9 @@ export class BattleStatGuesser {
 
 		if (!minusStat || plusStat === minusStat) {
 			minusStat = (plusStat === 'spe' ? 'spd' : 'spe');
+			if (this.isLegendsZa) {
+				minusStat = plusStat === 'atk' ? 'spa' : 'atk';
+			}
 		}
 
 		evs.plusStat = plusStat;

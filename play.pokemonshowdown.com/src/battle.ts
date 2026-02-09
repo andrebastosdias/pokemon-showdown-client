@@ -3447,7 +3447,7 @@ export class Battle {
 				this.dex = Dex.mod('gen9ssb' as ID);
 			}
 			if (this.tier.includes(`Legends`)) {
-				this.dex = Dex.mod('gen9legendsou' as ID);
+				this.dex = Dex.mod(`gen${this.gen}legends` as ID);
 			}
 			this.log(args);
 			break;
