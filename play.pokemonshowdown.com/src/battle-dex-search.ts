@@ -1862,7 +1862,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 						continue;
 					}
 					if (
-						format.includes('skybattle') && BattleTeambuilderTable['gen6'].metagameBans?.skybattleNonstandardMoves.includes(moveid)
+						format.includes('skybattle') && this.dex.moves.get(moveid).flags['nonsky']
 					) {
 						continue;
 					}
