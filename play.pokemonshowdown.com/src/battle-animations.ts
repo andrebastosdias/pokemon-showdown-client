@@ -1705,7 +1705,7 @@ export class BattleScene implements BattleSceneStub {
 		}
 		this.battle = null!;
 	}
-	static getHPColor(pokemon: { hp: number, maxhp: number, hpcolor: HPColor }) {
+	static getHPColor(pokemon: { hp: number, maxhp: number, hpcolor: HPColor | '' }) {
 		if (pokemon.hpcolor) return pokemon.hpcolor;
 		let ratio = pokemon.hp / pokemon.maxhp;
 		if (ratio > 0.5) return 'g';
