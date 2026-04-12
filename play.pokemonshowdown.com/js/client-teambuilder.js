@@ -1409,16 +1409,15 @@
 				} else if (BattleNatures[set.nature] && BattleNatures[set.nature].minus === j) {
 					evBuf += '<small>&minus;</small>';
 				}
-				var highestStat = 504;
-				if (j === 'hp') highestStat = 704;
+				var highestStat = 499;
+				if (j === 'hp') highestStat = 714;
 				if (isChampions) {
-					if (j === 'hp') highestStat = 267;
-					else highestStat = 310;
+					if (j === 'hp') highestStat = 362;
+					else highestStat = 252;
 				}
 				var width = stats[j] * 75 / highestStat;
-				if (j === 'hp') width = stats[j] * 75 / highestStat;
 				if (width > 75) width = 75;
-				var color = Math.floor(stats[j] * 180 / (isChampions ? 310 : 714));
+				var color = Math.floor(stats[j] * 180 / (isChampions ? 362 : 714));
 				if (color > 360) color = 360;
 				var statName = this.curTeam.gen === 1 && j === 'spa' ? 'Spc' : BattleStatNames[j];
 				buf += '<span class="statrow"><label>' + statName + '</label> <span class="statgraph"><span style="width:' + width + 'px;background:hsl(' + color + ',40%,75%);"></span></span> ' + evBuf + '</span>';
@@ -2090,16 +2089,15 @@
 				} else if (BattleNatures[set.nature] && BattleNatures[set.nature].minus === stat) {
 					evBuf += '<small>&minus;</small>';
 				}
-				var highestStat = 504;
-				if (stat === 'hp') highestStat = 704;
+				var highestStat = 499;
+				if (stat === 'hp') highestStat = 714;
 				if (usesStatPoints) {
-					if (stat === 'hp') highestStat = 267;
-					else highestStat = 310;
+					if (stat === 'hp') highestStat = 362;
+					else highestStat = 252;
 				}
 				var width = stats[stat] * 75 / highestStat;
-				if (stat === 'hp') width = stats[stat] * 75 / highestStat;
 				if (width > 75) width = 75;
-				var color = Math.floor(stats[stat] * 180 / (usesStatPoints ? 310 : 714));
+				var color = Math.floor(stats[stat] * 180 / (usesStatPoints ? 362 : 714));
 				if (color > 360) color = 360;
 				var statName = this.curTeam.gen === 1 && stat === 'spa' ? 'Spc' : BattleStatNames[stat];
 				buf += '<span class="statrow"><label>' + statName + '</label> <span class="statgraph"><span style="width:' + width + 'px;background:hsl(' + color + ',40%,75%);"></span></span> ' + evBuf + '</span>';
@@ -2119,16 +2117,15 @@
 			var totalev = 0;
 			for (var stat in stats) {
 				if (stat === 'spd' && this.curTeam.gen === 1) continue;
-				var highestStat = 504;
-				if (stat === 'hp') highestStat = 704;
+				var highestStat = 499;
+				if (stat === 'hp') highestStat = 714;
 				if (usesStatPoints) {
-					if (stat === 'hp') highestStat = 267;
-					else highestStat = 310;
+					if (stat === 'hp') highestStat = 362;
+					else highestStat = 252;
 				}
 				var width = stats[stat] * 180 / highestStat;
-				if (stat === 'hp') width = stats[stat] * 180 / highestStat;
 				if (width > 179) width = 179;
-				var color = Math.floor(stats[stat] * 180 / (usesStatPoints ? 310 : 714));
+				var color = Math.floor(stats[stat] * 180 / (usesStatPoints ? 362 : 714));
 				if (color > 360) color = 360;
 				buf += '<div><em><span style="width:' + Math.floor(width) + 'px;background:hsl(' + color + ',85%,45%);border-color:hsl(' + color + ',85%,35%)"></span></em></div>';
 				totalev += (set.evs[stat] || 0);
@@ -2382,16 +2379,15 @@
 			buf += '<div class="col graphcol"><div></div>';
 			for (var i in stats) {
 				stats[i] = this.getStat(i);
-				var highestStat = 504;
-				if (i === 'hp') highestStat = 704;
+				var highestStat = 499;
+				if (i === 'hp') highestStat = 714;
 				if (usesStatPoints) {
-					if (i === 'hp') highestStat = 267;
-					else highestStat = 310;
+					if (i === 'hp') highestStat = 362;
+					else highestStat = 252;
 				}
 				var width = stats[i] * 180 / highestStat;
-				if (i === 'hp') width = Math.floor(stats[i] * 180 / highestStat);
 				if (width > 179) width = 179;
-				var color = Math.floor(stats[i] * 180 / (usesStatPoints ? 310 : 714));
+				var color = Math.floor(stats[i] * 180 / (usesStatPoints ? 362 : 714));
 				if (color > 360) color = 360;
 				buf += '<div><em><span style="width:' + Math.floor(width) + 'px;background:hsl(' + color + ',85%,45%);border-color:hsl(' + color + ',85%,35%)"></span></em></div>';
 			}
