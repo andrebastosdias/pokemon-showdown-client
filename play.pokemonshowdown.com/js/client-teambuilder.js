@@ -1291,14 +1291,16 @@
 			if ($(window).width() < 640) this.show();
 		},
 		renderSet: function (set, i) {
+			var baseFormat = this.curTeam.format;
+			if (baseFormat.substr(-5) === 'draft') baseFormat = baseFormat.substr(0, baseFormat.length - 5);
 			var species = this.curTeam.dex.species.get(set.species);
-			var isChampions = this.curTeam.format.includes('champions');
-			var isLetsGo = this.curTeam.format.includes('letsgo');
-			var isBDSP = this.curTeam.format.includes('bdsp');
-			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
-			var isVGC = this.curTeam.format.includes('battlespot') || this.curTeam.format.includes('bss') ||
-				this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
-			var isLC = this.curTeam.format.startsWith('lc') || this.curTeam.format.endsWith('lc');
+			var isChampions = baseFormat.includes('champions');
+			var isLetsGo = baseFormat.includes('letsgo');
+			var isBDSP = baseFormat.includes('bdsp');
+			var isNatDex = baseFormat.includes('nationaldex') || baseFormat.includes('natdex');
+			var isVGC = baseFormat.includes('battlespot') || baseFormat.includes('bss') ||
+				baseFormat.includes('vgc') || baseFormat.includes('battlefestival');
+			var isLC = baseFormat.startsWith('lc') || baseFormat.endsWith('lc');
 			var buf = '<li value="' + i + '">';
 			if (!set.species) {
 				if (this.deletedSet) {
@@ -2077,11 +2079,13 @@
 
 			var stats = { hp: '', atk: '', def: '', spa: '', spd: '', spe: '' };
 
-			var usesStatPoints = this.curTeam.format.includes('champions');
-			var supportsEVs = !this.curTeam.format.includes('letsgo');
-			var isVGC = this.curTeam.format.includes('battlespot') || this.curTeam.format.includes('bss') ||
-				this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
-			var isLC = this.curTeam.format.startsWith('lc') || this.curTeam.format.endsWith('lc');
+			var baseFormat = this.curTeam.format;
+			if (baseFormat.substr(-5) === 'draft') baseFormat = baseFormat.substr(0, baseFormat.length - 5);
+			var usesStatPoints = baseFormat.includes('champions');
+			var supportsEVs = !baseFormat.includes('letsgo');
+			var isVGC = baseFormat.includes('battlespot') || baseFormat.includes('bss') ||
+				baseFormat.includes('vgc') || baseFormat.includes('battlefestival');
+			var isLC = baseFormat.startsWith('lc') || baseFormat.endsWith('lc');
 
 			// stat cell
 			var buf = '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (usesStatPoints ? 'Points' : supportsEVs ? 'EV' : 'AV') + '</em></span>';
@@ -2361,15 +2365,17 @@
 			var nature = BattleNatures[set.nature || 'Serious'];
 			if (!nature) nature = {};
 
-			var usesStatPoints = this.curTeam.format.includes('champions');
-			var supportsEVs = !this.curTeam.format.includes('letsgo') && !usesStatPoints;
-			// var supportsAVs = !supportsEVs && this.curTeam.format.endsWith('norestrictions');
+			var baseFormat = this.curTeam.format;
+			if (baseFormat.substr(-5) === 'draft') baseFormat = baseFormat.substr(0, baseFormat.length - 5);
+			var usesStatPoints = baseFormat.includes('champions');
+			var supportsEVs = !baseFormat.includes('letsgo') && !usesStatPoints;
+			// var supportsAVs = !supportsEVs && baseFormat.endsWith('norestrictions');
 			var defaultEV = this.curTeam.gen <= 2 ? 252 : 0;
 			var maxEV = usesStatPoints ? 32 : supportsEVs ? 252 : 200;
 			var stepEV = supportsEVs ? 4 : 1;
-			var isVGC = this.curTeam.format.includes('battlespot') || this.curTeam.format.includes('bss') ||
-				this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
-			var isLC = this.curTeam.format.startsWith('lc') || this.curTeam.format.endsWith('lc');
+			var isVGC = baseFormat.includes('battlespot') || baseFormat.includes('bss') ||
+				baseFormat.includes('vgc') || baseFormat.includes('battlefestival');
+			var isLC = baseFormat.startsWith('lc') || baseFormat.endsWith('lc');
 
 			// label column
 			buf += '<div class="col labelcol"><div></div>';
