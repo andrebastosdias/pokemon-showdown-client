@@ -605,11 +605,8 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 			let ratio = (range[0] + range[1]) / 2;
 			return Math.round(maxWidth * ratio) || 1;
 		}
-		let percentage = Math.ceil(100 * this.hp / this.maxhp);
-		if ((percentage === 100) && (this.hp < this.maxhp)) {
-			percentage = 99;
-		}
-		return percentage * maxWidth / 100;
+		let percentage = Math.floor(100 * this.hp / this.maxhp) || 1;
+		return Math.round(percentage * maxWidth / 100) || 1;
 	}
 	getHPText(precision = 1) {
 		return Pokemon.getHPText(this, this.side.battle.reportExactHP, precision);
