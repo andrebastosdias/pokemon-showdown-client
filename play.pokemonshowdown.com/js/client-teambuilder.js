@@ -1297,7 +1297,7 @@
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 			var isVGC = this.curTeam.format.includes('battlespot') || this.curTeam.format.includes('bss') ||
-						this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
+				this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
 			var isLC = this.curTeam.format.startsWith('lc') || this.curTeam.format.endsWith('lc');
 			var buf = '<li value="' + i + '">';
 			if (!set.species) {
@@ -2080,7 +2080,7 @@
 			var usesStatPoints = this.curTeam.format.includes('champions');
 			var supportsEVs = !this.curTeam.format.includes('letsgo');
 			var isVGC = this.curTeam.format.includes('battlespot') || this.curTeam.format.includes('bss') ||
-						this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
+				this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
 			var isLC = this.curTeam.format.startsWith('lc') || this.curTeam.format.endsWith('lc');
 
 			// stat cell
@@ -2368,7 +2368,7 @@
 			var maxEV = usesStatPoints ? 32 : supportsEVs ? 252 : 200;
 			var stepEV = supportsEVs ? 4 : 1;
 			var isVGC = this.curTeam.format.includes('battlespot') || this.curTeam.format.includes('bss') ||
-						this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
+				this.curTeam.format.includes('vgc') || this.curTeam.format.includes('battlefestival');
 			var isLC = this.curTeam.format.startsWith('lc') || this.curTeam.format.endsWith('lc');
 
 			// label column
