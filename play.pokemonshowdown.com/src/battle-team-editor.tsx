@@ -2453,8 +2453,8 @@ class StatForm extends preact.Component<{
 			const maxStat = statID === 'hp' ?
 				Math.floor(176 * editor.defaultLevel / 25) + 10 :
 				Math.floor(247 * editor.defaultLevel / 50) + 5;
-			let width = Math.min(stat * 75 / maxStat, 75);
-			let hue = Math.min(Math.floor(stat * 180 / maxStat), 360);
+			const width = Math.min(stat * 75 / maxStat, 75);
+			const hue = Math.min(Math.floor(stat * 180 / maxStat), 360);
 			const statName = editor.gen === 1 && statID === 'spa' ? 'Spc' : BattleStatNames[statID];
 			if (evs && !ev && !set.evs && statID === 'hp') ev = 'EVs';
 			return <span class="statrow">
@@ -2718,8 +2718,8 @@ class StatForm extends preact.Component<{
 		const maxStat = statID === 'hp' ?
 			Math.floor(176 * editor.defaultLevel / 25) + 10 :
 			Math.floor(247 * editor.defaultLevel / 50) + 5;
-		let width = Math.min(stat * 180 / maxStat, 180);
-		let hue = Math.min(Math.floor(stat * 180 / maxStat), 360);
+		const width = Math.min(stat * 180 / maxStat, 180);
+		const hue = Math.min(Math.floor(stat * 180 / maxStat), 360);
 		return <span
 			style={`width:${Math.floor(width)}px;background:hsl(${hue},85%,45%);border-color:hsl(${hue},85%,35%)`}
 		></span>;
