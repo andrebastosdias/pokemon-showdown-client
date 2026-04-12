@@ -116,7 +116,8 @@ export class TeamEditorState extends PSModel {
 		this.defaultLevel = 100;
 		if (
 			formatid.includes('vgc') || formatid.includes('bss') || formatid.includes('ultrasinnohclassic') ||
-			formatid.includes('battlespot') || formatid.includes('battlestadium') || formatid.includes('battlefestival')
+			formatid.includes('battlespot') || formatid.includes('battlestadium') || formatid.includes('battlefestival') ||
+			formatid.includes('letsgo') || formatid.includes('champions')
 		) {
 			this.defaultLevel = 50;
 		}
