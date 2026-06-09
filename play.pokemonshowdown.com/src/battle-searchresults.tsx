@@ -29,8 +29,12 @@ export class PSSearchResults extends preact.Component<{
 	renderPokemonSortRow() {
 		const search = this.props.search;
 		const sortCol = search.sortCol;
+		const hasUsageStats = search.hasUsageStats();
 		return <li class="result"><div class="sortrow">
-			<button class={`sortcol numsortcol${!sortCol ? ' cur' : ''}`}>{!sortCol ? 'Sort: ' : search.firstPokemonColumn}</button>
+			<button
+				class={`sortcol tiersortcol${sortCol === 'usage' ? ' cur' : ''}`}
+				data-sort={hasUsageStats ? 'usage' : undefined}
+			>{hasUsageStats ? 'Tier/Usage' : 'Tier'}</button>
 			<button class={`sortcol pnamesortcol${sortCol === 'name' ? ' cur' : ''}`} data-sort="name">Name</button>
 			<button class={`sortcol typesortcol${sortCol === 'type' ? ' cur' : ''}`} data-sort="type">Types</button>
 			<button class={`sortcol abilitysortcol${sortCol === 'ability' ? ' cur' : ''}`} data-sort="ability">Abilities</button>
@@ -67,13 +71,19 @@ export class PSSearchResults extends preact.Component<{
 		let bst = 0;
 		for (const stat of Object.values(stats)) bst += stat;
 		if (search.dex.gen < 2) bst -= stats['spd'];
+		const showUsage = search.sortCol === 'usage' && search.hasUsageStats();
+		const usage = showUsage ? search.getUsage(pokemon) : null;
+		const tier = search.getTier(pokemon);
+		const usageText = usage === null ? '' : `${(usage * 100).toFixed(1)}%`;
 
 		if (errorMessage) {
 			return <li class="result"><a
 				href={`${this.URL_ROOT}pokemon/${id}`} class={id === this.speciesId ? 'cur' : ''}
 				data-target="push" data-entry={`pokemon|${pokemon.name}`}
 			>
-				<span class="col numcol">{search.getTier(pokemon)}</span>
+				<span class={`col numcol${showUsage ? ' usagenumcol' : ''}`}>
+					{tier}{showUsage && [<br />, <em>{usageText}</em>]}
+				</span>
 
 				<span class="col iconcol">
 					<span class="pixelated" style={Dex.getPokemonIcon(pokemon.id)}></span>
@@ -90,7 +100,9 @@ export class PSSearchResults extends preact.Component<{
 				href={`${this.URL_ROOT}pokemon/${id}`} class={id === this.speciesId ? 'cur' : ''}
 				data-target="push" data-entry={`pokemon|${pokemon.name}`}
 			>
-				<span class="col numcol">{search.getTier(pokemon)}</span>
+				<span class={`col numcol${showUsage ? ' usagenumcol' : ''}`}>
+					{tier}{showUsage && [<br />, <em>{usageText}</em>]}
+				</span>
 
 				<span class="col iconcol">
 					<span class="pixelated" style={Dex.getPokemonIcon(pokemon.id)}></span>
