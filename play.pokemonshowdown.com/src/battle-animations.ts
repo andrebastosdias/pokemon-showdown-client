@@ -11,7 +11,7 @@
  * @license MIT
  */
 
-import type { Battle, Pokemon, Side, WeatherState } from './battle';
+import type { Battle, HPColor, Pokemon, Side, WeatherState } from './battle';
 import type { BattleSceneStub } from './battle-scene-stub';
 import { BattleMoveAnims } from './battle-animations-moves';
 import { BattleLog } from './battle-log';
@@ -273,6 +273,20 @@ export class BattleScene implements BattleSceneStub {
 		transition: string, after?: string, additionalCss?: JQuery.PlainObject
 	) {
 		if (typeof effect === 'string') effect = BattleEffects[effect];
+
+		let $effect = $(`<img src="${effect.url!}" style="display:block;position:absolute" />`);
+		this.$fx.append($effect);
+		if (additionalCss) $effect.css(additionalCss);
+		$effect = this.$fx.children().last();
+
+		return this.animateEffect($effect, effect, start, end, transition, after);
+	}
+	animateEffect(
+		$effect: JQuery, effect: string | SpriteData, start: ScenePos, end: ScenePos,
+		transition: string, after?: string, additionalCss?: JQuery.PlainObject
+	) {
+		if (typeof effect === 'string') effect = BattleEffects[effect];
+
 		if (!start.time) start.time = 0;
 		if (!end.time) end.time = start.time + 500;
 		start.time += this.timeOffset;
@@ -285,16 +299,13 @@ export class BattleScene implements BattleSceneStub {
 		let startpos = this.pos(start, effect);
 		let endpos = this.posT(end, effect, transition, start);
 
-		let $effect = $(`<img src="${effect.url!}" style="display:block;position:absolute" />`);
-		this.$fx.append($effect);
-		if (additionalCss) $effect.css(additionalCss);
-		$effect = this.$fx.children().last();
-
 		if (start.time) {
 			$effect.css({ ...startpos, opacity: 0 });
 			$effect.delay(start.time).animate({
 				opacity: startpos.opacity,
 			}, 1);
+		} else if ($effect.queue().length) {
+			$effect.animate(startpos, 0);
 		} else {
 			$effect.css(startpos);
 		}
@@ -313,6 +324,8 @@ export class BattleScene implements BattleSceneStub {
 			$effect.animate(endendpos, 200);
 		}
 		this.waitFor($effect);
+
+		return $effect;
 	}
 	backgroundEffect(bg: string, duration: number, opacity = 1, delay = 0) {
 		let $effect = $('<div class="background"></div>');
@@ -580,6 +593,9 @@ export class BattleScene implements BattleSceneStub {
 			this.setBgm(-101);
 		} else if (typeof rated === 'string' && rated.startsWith('National Pokemon Association')) {
 			bg = 'fx/bg-npa.png';
+			this.setBgm(-101);
+		} else if (typeof rated === 'string' && rated.startsWith('World Cup of Pokemon')) {
+			bg = 'fx/bg-wcop.png';
 			this.setBgm(-101);
 		} else if (typeof rated === 'string' && rated.startsWith('Smogon Champions League')) {
 			bg = 'fx/bg-scl.png';
@@ -1692,7 +1708,8 @@ export class BattleScene implements BattleSceneStub {
 		}
 		this.battle = null!;
 	}
-	static getHPColor(pokemon: { hp: number, maxhp: number }) {
+	static getHPColor(pokemon: { hp: number, maxhp: number, hpcolor: HPColor | '' }) {
+		if (pokemon.hpcolor) return pokemon.hpcolor;
 		let ratio = pokemon.hp / pokemon.maxhp;
 		if (ratio > 0.5) return 'g';
 		if (ratio > 0.2) return 'y';
@@ -2826,7 +2843,7 @@ export class PokemonSprite extends Sprite {
 		}
 		if (pokemon.terastallized) {
 			status += `<img src="${Dex.resourcePrefix}sprites/types/${encodeURIComponent(pokemon.terastallized)}.png" alt="${pokemon.terastallized}" class="pixelated" /> `;
-		} else if (pokemon.volatiles.typechange && pokemon.volatiles.typechange[1]) {
+		} else if (pokemon.volatiles.typechange?.[1]) {
 			const types = pokemon.volatiles.typechange[1].split('/');
 			for (const type of types) {
 				status += '<img src="' + Dex.resourcePrefix + 'sprites/types/' + encodeURIComponent(type) + '.png" alt="' + type + '" class="pixelated" /> ';

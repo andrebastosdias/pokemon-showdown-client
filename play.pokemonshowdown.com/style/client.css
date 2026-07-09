@@ -641,11 +641,16 @@ p.or:after {
 .mainmenufooter small small {
 	font-size: 8pt;
 }
-.mainmenufooter a {
+.mainmenufooter a, .mainmenufooter button {
+	background: transparent;
+	border: 0;
+	padding: 0;
+	text-shadow: 0 0 3px black, 0 0 3px black, 0 0 3px black;
+
 	text-decoration: underline;
 	color: #99BBEE;
 }
-.mainmenufooter a:hover {
+.mainmenufooter a:hover, .mainmenufooter button:hover {
 	text-decoration: underline;
 	color: #CCDDFF;
 }
@@ -980,7 +985,7 @@ p.or:after {
 	font-size: 18pt;
 	font-weight: normal;
 }
-/* .roomcounters .usercount {
+.roomcounters .usercount {
 	display: block;
 	width: 49px;
 	height: 63px;
@@ -991,6 +996,10 @@ p.or:after {
 }
 .roomcounters button:hover .usercount {
 	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/meloetta.gif) center no-repeat;
+}
+.roomcounters .usercount.afd,
+.roomcounters button:hover .usercount.afd {
+	background: url(https://play.pokemonshowdown.com/sprites/afd/meloetta.png) center no-repeat;
 }
 .roomcounters .battlecount {
 	display: block;
@@ -1003,30 +1012,10 @@ p.or:after {
 }
 .roomcounters button:hover .battlecount {
 	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/meloetta-pirouette.gif) center no-repeat;
-} */
-.roomcounters .usercount {
-	display: block;
-	width: 96px;
-	height: 96px;
-	position: absolute;
-	left: -60px;
-	bottom: -20px;
-	background: url(https://play.pokemonshowdown.com/sprites/gen5/malamar.png) center no-repeat;
-}
-.roomcounters button:hover .usercount {
-	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/malamar.gif) center no-repeat;
-}
-.roomcounters .battlecount {
-	display: block;
-	width: 96px;
-	height: 96px;
-	position: absolute;
-	right: -63px;
-	bottom: -20px;
-	background: url(https://play.pokemonshowdown.com/sprites/gen5/malamar.png) center no-repeat;
-}
-.roomcounters button:hover .battlecount {
-	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/malamar.gif) center no-repeat;
+} 
+.roomcounters .battlecount.afd,
+.roomcounters button:hover .battlecount.afd {
+	background: url(https://play.pokemonshowdown.com/sprites/afd/meloetta-pirouette.png) center no-repeat;
 }
 
 .roomlist {
@@ -1155,6 +1144,7 @@ p.or:after {
 }
 .chatbox textarea {
 	display: block;
+	box-sizing: content-box;
 	height: 1.1em;
 	width: 100%;
 	resize: none;
