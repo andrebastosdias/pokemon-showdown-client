@@ -3013,6 +3013,7 @@ export class BattleStatGuesser {
 	useStatPoints: boolean;
 	supportsEVs: boolean;
 	supportsAVs: boolean;
+	isLegendsZa: boolean;
 
 	constructor(formatid: ID) {
 		this.formatid = formatid;
@@ -3024,6 +3025,7 @@ export class BattleStatGuesser {
 			this.formatid.endsWith('norestrictions')
 		);
 		this.useStatPoints = this.formatid.includes('champions');
+		this.isLegendsZa = this.formatid.includes('legends') && this.dex.gen === 9;
 		this.supportsEVs = !this.formatid.includes('letsgo') && !this.useStatPoints;
 		this.supportsAVs = !this.supportsEVs && this.formatid.endsWith('norestrictions');
 	}
@@ -3040,7 +3042,7 @@ export class BattleStatGuesser {
 	}
 	guessRole(set: Dex.PokemonSet) {
 		if (!set) return '?';
-		if (!set.moves) return '?';
+		if (!set.moves && !this.isLegendsZa) return '?';
 
 		let moveCount = {
 			'Physical': 0,
@@ -3072,12 +3074,12 @@ export class BattleStatGuesser {
 		if (!species.exists) return '?';
 		let stats = species.baseStats;
 
-		if (set.moves.length < 1) return '?';
+		if (set.moves.length < 1 && !this.isLegendsZa) return '?';
 		let needsFourMoves = !['Unown', 'Ditto'].includes(species.baseSpecies);
 		let hasFourValidMoves = set.moves.length >= 4 && !set.moves.includes('');
 		let moveids = set.moves.map(toID);
 		if (moveids.includes('lastresort' as ID)) needsFourMoves = false;
-		if (!hasFourValidMoves && needsFourMoves && !this.formatid.includes('metronomebattle')) {
+		if (!hasFourValidMoves && needsFourMoves && !this.formatid.includes('metronomebattle') && !this.isLegendsZa) {
 			return '?';
 		}
 
@@ -3262,6 +3264,14 @@ export class BattleStatGuesser {
 		this.moveCount = moveCount;
 		this.hasMove = hasMove;
 
+		if (this.isLegendsZa) {
+			let offenseBias: 'Physical' | 'Special' = 'Physical';
+			if (moveCount['Physical'] > moveCount['Special']) offenseBias = 'Physical';
+			else if (moveCount['Special'] > moveCount['Physical']) offenseBias = 'Special';
+			else offenseBias = stats.spa > stats.atk ? 'Special' : 'Physical';
+			return 'Bulky ' + offenseBias + ' Sweeper';
+		}
+
 		if (species.id === 'ditto') return abilityid === 'imposter' ? 'Physically Defensive' : 'Fast Bulky Support';
 		if (species.id === 'shedinja') return 'Fast Physical Sweeper';
 
@@ -3319,6 +3329,7 @@ export class BattleStatGuesser {
 		return 'Physically Defensive';
 	}
 	ensureMinEVs(evs: Dex.StatsTable, stat: Dex.StatName, min: number, evTotal: number) {
+		if (this.isLegendsZa) return evTotal;
 		if (!evs[stat]) evs[stat] = 0;
 		let diff = min - evs[stat];
 		if (diff <= 0) return evTotal;
@@ -3342,6 +3353,7 @@ export class BattleStatGuesser {
 		return evTotal; // can't do it :(
 	}
 	ensureMaxEVs(evs: Dex.StatsTable, stat: Dex.StatName, min: number, evTotal: number) {
+		if (this.isLegendsZa) return evTotal;
 		if (!evs[stat]) evs[stat] = 0;
 		let diff = evs[stat] - min;
 		if (diff <= 0) return evTotal;
@@ -3476,6 +3488,7 @@ export class BattleStatGuesser {
 				}
 			}
 			const ensureHPDivisibility = (currentEVTotal: number) => {
+				if (this.isLegendsZa) return currentEVTotal;
 				let hpDivisibility = 0;
 				let hpShouldBeDivisible = false;
 				let hp = evs['hp'] || 0;
@@ -3578,6 +3591,9 @@ export class BattleStatGuesser {
 
 		if (!minusStat || plusStat === minusStat) {
 			minusStat = (plusStat === 'spe' ? 'spd' : 'spe');
+			if (this.isLegendsZa) {
+				minusStat = plusStat === 'atk' ? 'spa' : 'atk';
+			}
 		}
 
 		evs.plusStat = plusStat;
