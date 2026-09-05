@@ -661,9 +661,9 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	 */
 	set: Dex.PokemonSet | null = null;
 
-	protected formatType: 'doubles' | 'bdsp' | 'bdspdoubles' | 'rs' | 'frlg' | 'bw1' | 'letsgo' | 'metronome' | 'natdex' |
+	protected formatType: 'doubles' | 'legends' | 'bdsp' | 'bdspdoubles' | 'rs' | 'frlg' | 'bw1' | 'letsgo' | 'metronome' | 'natdex' |
 		'nfe' | 'ssdlc1' | 'ssdlc1doubles' | 'predlc' | 'predlcdoubles' | 'svdlc1' | 'svdlc1doubles' | 'stadium' | 'lc' |
-		'champions' | 'natdexchampions' | 'legends' | null = null;
+		'champions' | 'natdexchampions' | null = null;
 	isDoubles = false;
 
 	/**
@@ -1199,9 +1199,9 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		let tierSet: SearchRow[] = table.tierSet;
 		let slices: { [k: string]: number } = table.formatSlices;
 		if (
+			format === 'inversebattle' || format === 'skybattle' ||
 			format === 'ubers' || format === 'uber' || format === 'ubersuu' ||
-			format === '4v4doublesuu' || format === 'nationaldexdoubles' ||
-			format === 'inversebattle' || format === 'skybattle'
+			format === '4v4doublesuu' || format === 'nationaldexdoubles'
 		) {
 			tierSet = tierSet.slice(slices.Uber);
 		} else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType) || isLegendsZa) {

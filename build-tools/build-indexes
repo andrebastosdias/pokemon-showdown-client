@@ -374,6 +374,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 					if (species.name === 'Pikachu-Alola') return 'Illegal';
 					return species.tier;
 				}
+				if (isLegendsArceus && species.isNonstandard) return 'Illegal';
 				if (isLegendsZa) {
 					if (species.isNonstandard) return 'Illegal';
 					if (baseSpecies.tags.includes('Restricted Legendary')) return 'Restricted';
@@ -560,7 +561,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen9legends'].tiers = tiers;
 			BattleTeambuilderTable['gen9legends'].items = items;
 			BattleTeambuilderTable['gen9legends'].overrideTier = overrideTier;
-			BattleTeambuilderTable['gen8bdsp'].metagameBans = metagameBans;
+			BattleTeambuilderTable['gen9legends'].metagameBans = metagameBans;
 			BattleTeambuilderTable['gen9legends'].formatSlices = formatSlices;
 		} else if (isChampions) {
 			BattleTeambuilderTable['champions'] = {};
@@ -1361,7 +1362,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 
 	for (const mod of [
 		'gen3rs', 'gen3frlg', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen9ssb', 'champions',
-		'gen8legends', 'gen9legends'
+		'gen8legends', 'gen9legends',
 	]) {
 		const modDex = Dex.mod(mod);
 		const modData = modDex.data;

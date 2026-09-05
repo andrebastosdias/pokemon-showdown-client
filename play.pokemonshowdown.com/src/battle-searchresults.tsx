@@ -65,13 +65,16 @@ export class PSSearchResults extends preact.Component<{
 	renderPokemonSortRowHTML(index: number) {
 		const search = this.props.search;
 		const sortCol = search.sortCol;
+		const abilityWidthClass = search.dex.gen < 3 || search.dex.modid === 'gen7letsgo' || search.dex.modid.includes('legends') ? null :
+			(search.dex.gen < 5 ? 'singleabilitysortcol' : 'abilitysortcol');
 		return [
 			`<li class="result" value="${index}"><div class="sortrow">`,
 			`<button class="sortcol numsortcol${!sortCol ? ' cur' : ''}">`,
 			`${!sortCol ? 'Sort: ' : escapeHTML(search.firstPokemonColumn)}</button>`,
 			`<button class="sortcol pnamesortcol${sortCol === 'name' ? ' cur' : ''}" data-sort="name">Name</button>`,
 			`<button class="sortcol typesortcol${sortCol === 'type' ? ' cur' : ''}" data-sort="type">${escapeHTML(TL.term.types)}</button>`,
-			`<button class="sortcol abilitysortcol${sortCol === 'ability' ? ' cur' : ''}" data-sort="ability">${escapeHTML(TL.term.abilities)}</button>`,
+			!abilityWidthClass ? '' :
+				`<button class="sortcol ${abilityWidthClass}${sortCol === 'ability' ? ' cur' : ''}" data-sort="ability">${escapeHTML(TL.term.abilities)}</button>`,
 			`<button class="sortcol statsortcol${sortCol === 'hp' ? ' cur' : ''}" data-sort="hp">${TL.statShort.hp}</button>`,
 			`<button class="sortcol statsortcol${sortCol === 'atk' ? ' cur' : ''}" data-sort="atk">${TL.statShort.atk}</button>`,
 			`<button class="sortcol statsortcol${sortCol === 'def' ? ' cur' : ''}" data-sort="def">${TL.statShort.def}</button>`,
@@ -83,22 +86,6 @@ export class PSSearchResults extends preact.Component<{
 		].join('');
 	}
 
-	// renderMoveSortRow() {
-	// 	const sortCol = this.props.search.sortCol;
-	// 	return <li class="result"><div class="sortrow">
-	// 		<button class={`sortcol movenamesortcol${sortCol === 'name' ? ' cur' : ''}`} data-sort="name">Name</button>
-	// 		<button class={`sortcol movetypesortcol${sortCol === 'type' ? ' cur' : ''}`} data-sort="type">Type</button>
-	// 		<button class={`sortcol movetypesortcol${sortCol === 'category' ? ' cur' : ''}`} data-sort="category">Cat</button>
-	// 		<button class={`sortcol powersortcol${sortCol === 'power' ? ' cur' : ''}`} data-sort="power">Pow</button>
-	// 		{ this.props.search.dex.modid === 'gen9legends' ? (
-	// 			<button class={`sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}`} data-sort="accuracy">Cool</button>
-	// 		) : (
-	// 			<>
-	// 			<button class={`sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}`} data-sort="accuracy">Acc</button>
-	// 			<button class={`sortcol ppsortcol${sortCol === 'pp' ? ' cur' : ''}`} data-sort="pp">PP</button>
-	// 			</>
-	// 		)}
-	// 	</div></li>;
 	renderMoveSortRowHTML(index: number) {
 		const search = this.props.search;
 		const sortCol = search.sortCol;
@@ -107,7 +94,7 @@ export class PSSearchResults extends preact.Component<{
 			`<button class="sortcol movetypesortcol${sortCol === 'type' ? ' cur' : ''}" data-sort="type">${escapeHTML(TL.term.type)}</button>` +
 			`<button class="sortcol movetypesortcol${sortCol === 'category' ? ' cur' : ''}" data-sort="category">Cat</button>` +
 			`<button class="sortcol powersortcol${sortCol === 'power' ? ' cur' : ''}" data-sort="power">Pow</button>` +
-			(this.props.search.dex.modid === 'gen9legends' ? `<button class="sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}" data-sort="accuracy">Cool</button>` : (
+			(search.dex.modid === 'gen9legends' ? `<button class="sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}" data-sort="accuracy">Cool</button>` : (
 			`<button class="sortcol accuracysortcol${sortCol === 'accuracy' ? ' cur' : ''}" data-sort="accuracy">Acc</button>` +
 			`<button class="sortcol ppsortcol${sortCol === 'pp' ? ' cur' : ''}" data-sort="pp">PP</button>`
 			)) +
@@ -144,27 +131,28 @@ export class PSSearchResults extends preact.Component<{
 			`<img src="${Dex.resourcePrefix}sprites/types/${type}.png" alt="${escapeHTML(search.dex.text.typeName(type))}" height="14" width="32" class="pixelated" />`
 		).join('')}</span>`;
 
-		if (search.dex.gen >= 3) {
+		if (search.dex.gen >= 3 && search.dex.modid !== 'gen7letsgo' && !search.dex.modid.includes('legends')) {
 			const ability0 = search.dex.text.get(search.dex.abilities.get(pokemon.abilities['0'])).name;
 			const ability1 = pokemon.abilities['1'] &&
 				search.dex.text.get(search.dex.abilities.get(pokemon.abilities['1'])).name;
 			buf += pokemon.abilities['1'] ?
 				`<span class="col twoabilitycol">${escapeHTML(ability0)}<br />${escapeHTML(ability1)}</span>` :
 				`<span class="col abilitycol">${escapeHTML(ability0)}</span>`;
-		}
-		if (search.dex.gen >= 5) {
-			const hiddenAbility = pokemon.abilities['H'] &&
-				search.dex.text.get(search.dex.abilities.get(pokemon.abilities['H'])).name;
-			const specialAbility = pokemon.abilities['S'] &&
-				search.dex.text.get(search.dex.abilities.get(pokemon.abilities['S'])).name;
-			if (pokemon.abilities['S']) {
-				buf += `<span class="col twoabilitycol${pokemon.unreleasedHidden ? ' unreleasedhacol' : ''}">` +
-					`${escapeHTML(hiddenAbility || '')}<br />${escapeHTML(specialAbility)}</span>`;
-			} else if (pokemon.abilities['H']) {
-				buf += `<span class="col abilitycol${pokemon.unreleasedHidden ? ' unreleasedhacol' : ''}">` +
-					`${escapeHTML(hiddenAbility)}</span>`;
-			} else {
-				buf += `<span class="col abilitycol"></span>`;
+
+			if (search.dex.gen >= 5) {
+				const hiddenAbility = pokemon.abilities['H'] &&
+					search.dex.text.get(search.dex.abilities.get(pokemon.abilities['H'])).name;
+				const specialAbility = pokemon.abilities['S'] &&
+					search.dex.text.get(search.dex.abilities.get(pokemon.abilities['S'])).name;
+				if (pokemon.abilities['S']) {
+					buf += `<span class="col twoabilitycol${pokemon.unreleasedHidden ? ' unreleasedhacol' : ''}">` +
+						`${escapeHTML(hiddenAbility || '')}<br />${escapeHTML(specialAbility)}</span>`;
+				} else if (pokemon.abilities['H']) {
+					buf += `<span class="col abilitycol${pokemon.unreleasedHidden ? ' unreleasedhacol' : ''}">` +
+						`${escapeHTML(hiddenAbility)}</span>`;
+				} else {
+					buf += `<span class="col abilitycol"></span>`;
+				}
 			}
 		}
 
@@ -287,7 +275,7 @@ export class PSSearchResults extends preact.Component<{
 			`alt="${escapeHTML(search.dex.text.categoryName(move.category))}" height="14" width="32" class="pixelated" />` +
 			`</span>` +
 			`<span class="col labelcol">${move.category !== 'Status' ? `<em>Power</em><br />${move.basePower || '&mdash;'}` : ''}</span>` +
-			(search.dex.modid === 'gen9legends' ? `<span class="col widelabelcol"><em>Cooldown</em><br />${move.accuracy}}</span>` : (
+			(search.dex.modid === 'gen9legends' ? `<span class="col widelabelcol"><em>Cooldown</em><br />${move.accuracy}</span>` : (
 			`<span class="col widelabelcol"><em>Accuracy</em><br />` +
 			`${move.accuracy && move.accuracy !== true ? `${move.accuracy}%` : '&mdash;'}</span>` +
 			`<span class="col pplabelcol"><em>PP</em><br />${pp}</span>`

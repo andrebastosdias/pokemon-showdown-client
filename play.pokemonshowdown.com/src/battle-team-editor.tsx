@@ -69,6 +69,10 @@ export class TeamEditorState extends PSModel {
 	isLetsGo = false;
 	isNatDex = false;
 	isBDSP = false;
+	isLegends = false;
+	isLegendsArceus = false;
+	isLegendsZa = false;
+	isLegendsZaRestricted = false;
 	isChampions = false;
 	formeLegality: 'normal' | 'hackmons' | 'custom' = 'normal';
 	abilityLegality: 'normal' | 'hackmons' = 'normal';
@@ -103,6 +107,10 @@ export class TeamEditorState extends PSModel {
 		this.isLetsGo = formatid.includes('letsgo');
 		this.isNatDex = formatid.includes('nationaldex') || formatid.includes('natdex');
 		this.isBDSP = formatid.includes('bdsp');
+		this.isLegends = formatid.includes('legends');
+		this.isLegendsArceus = this.isLegends && this.dex.gen === 8;
+		this.isLegendsZa = this.isLegends && this.dex.gen === 9;
+		this.isLegendsZaRestricted = this.isLegendsZa && !formatid.includes('norestrictions');
 		this.isChampions = formatid.includes('champions');
 		if (formatid.includes('almostanyability') || formatid.includes('aaa')) {
 			this.abilityLegality = 'hackmons';
@@ -121,6 +129,7 @@ export class TeamEditorState extends PSModel {
 
 		this.defaultLevel = 100;
 		if (
+			['gen9legendsnormalrules', 'gen9legendscasualrules'].includes(formatid) ||
 			formatid.includes('vgc') || formatid.includes('bss') || formatid.includes('ultrasinnohclassic') ||
 			formatid.includes('battlespot') || formatid.includes('battlestadium') || formatid.includes('battlefestival') ||
 			formatid.includes('letsgo') || formatid.includes('champions')
@@ -467,10 +476,10 @@ export class TeamEditorState extends PSModel {
 		return this.sets.length < 6 || this.team.isBox;
 	}
 	showItem(set: Dex.PokemonSet) {
-		return !!(this.gen > 1 && !this.isLetsGo || set.item);
+		return !!(this.gen > 1 && !this.isLetsGo && !this.isLegendsArceus || set.item);
 	}
 	showAbility(set: Dex.PokemonSet) {
-		return !!(this.gen > 2 && !this.isLetsGo || set.ability);
+		return !!(this.gen > 2 && !this.isLetsGo && !this.isLegends || set.ability);
 	}
 	getHPType(set: Dex.PokemonSet): Dex.TypeName {
 		if (set.hpType) return set.hpType as Dex.TypeName;
@@ -537,7 +546,7 @@ export class TeamEditorState extends PSModel {
 	defaultIVs(set: Dex.PokemonSet, noGuess = !!set.ivs): Record<Dex.StatName, number> {
 		const useIVs = this.gen > 2;
 		const defaultIVs = { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 };
-		if (this.isChampions) return defaultIVs;
+		if (this.isChampions || this.isLegendsArceus) return defaultIVs;
 		if (!useIVs) {
 			for (const stat of Dex.statNames) defaultIVs[stat] = 15;
 		}
@@ -779,7 +788,7 @@ export class TeamEditorState extends PSModel {
 		return counters;
 	}
 	getDefaultAbility(set: Dex.PokemonSet) {
-		if (this.gen < 3 || this.isLetsGo || this.formeLegality === 'custom') return set.ability;
+		if (this.gen < 3 || this.isLetsGo || this.isLegends || this.formeLegality === 'custom') return set.ability;
 		const species = this.dex.species.get(set.species);
 		if (this.formeLegality === 'hackmons') {
 			// TODO: support gen 9 hackmons forme legality more completely than this
@@ -1811,7 +1820,7 @@ class TeamTextbox extends preact.Component<{
 			<span class="detailcell">
 				<label>{TL.term.shiny}</label>{set.shiny ? 'Yes' : '\u2014'}
 			</span>
-			{editor.gen === 9 && !editor.isChampions ? (
+			{editor.gen === 9 && !editor.isChampions && !editor.isLegendsZa ? (
 				<span class="detailcell">
 					<label>{TL`Tera`}</label><PSIcon type={set.teraType || species.requiredTeraType || species.types[0]} />
 				</span>
@@ -3005,7 +3014,7 @@ class TeamEditorForm extends preact.Component<{
 										src={`${Dex.resourcePrefix}sprites/misc/shiny.png`} width={18} height={18} alt="Yes" style="margin-top: -2px"
 									/> : '\u2014'}
 								</span>}
-								{editor.gen === 9 && !editor.isChampions && <span class="detailcell">
+								{editor.gen === 9 && !editor.isChampions && !editor.isLegendsZa && <span class="detailcell">
 									<label>{TL`Tera`}</label> {}
 									<PSIcon type={set.teraType || species.requiredTeraType || species.types[0]} new={!editor.narrow} tera />
 								</span>}
@@ -3302,7 +3311,7 @@ class StatForm extends preact.Component<{
 		const hpIVdata = hpType && !editor.canHyperTrain(set) && editor.getHPIVs(hpType) || null;
 		const autoSpread = set.ivs && editor.defaultIVs(set, false);
 		const autoSpreadValue = autoSpread && Object.values(autoSpread).join('/');
-		if (editor.isChampions) return null;
+		if (editor.isChampions || editor.isLegendsArceus) return null;
 		if (!hpIVdata) {
 			return <select name="ivspread" class="select" onChange={this.changeIVSpread}>
 				<option value="" selected>{TL`IV spreads`}</option>
@@ -3954,7 +3963,7 @@ class DetailsForm extends preact.Component<{
 					name="level" value={set.level ?? ''} placeholder={`${editor.defaultLevel}`}
 					type="number" inputMode="numeric" min="1" max="100" step="1"
 					class="textbox inputform numform default-placeholder" style="width: 50px"
-					onInput={this.changeLevel} onChange={this.changeLevel} disabled={editor.isChampions}
+					onInput={this.changeLevel} onChange={this.changeLevel} disabled={editor.isChampions || editor.isLegendsZaRestricted}
 				/></label><small>(You probably want to change the team's levels by changing the format, not here)</small></p>
 				{editor.gen > 1 && (<>
 					<p><div class="label">{TL.label(TL.term.shiny)}<div class="labeled">
@@ -3998,7 +4007,7 @@ class DetailsForm extends preact.Component<{
 					)}
 				</>
 				)}
-				{editor.gen === 8 && !editor.isBDSP && !species.cannotDynamax && (
+				{editor.gen === 8 && !editor.isBDSP && !editor.isLegendsArceus && !species.cannotDynamax && (
 					<p>
 						<label class="label" style="display:inline">{TL.label(TL.term.dynamaxlevel || 'Dynamax level')}<input
 							name="dynamaxlevel" value={set.dynamaxLevel ?? ''} placeholder="10"
@@ -4028,7 +4037,7 @@ class DetailsForm extends preact.Component<{
 						))}
 					</select></label>
 				</p>}
-				{editor.gen === 9 && !editor.isChampions && <p>
+				{editor.gen === 9 && !editor.isChampions && !editor.isLegendsZa && <p>
 					<label class="label" title={`Tera ${TL.term.type}`}>
 						Tera {TL.term.type}: {}
 						{species.requiredTeraType && editor.formeLegality === 'normal' ? (
