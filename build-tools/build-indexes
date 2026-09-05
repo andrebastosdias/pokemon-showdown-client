@@ -554,6 +554,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen8legends'].learnsets = {};
 			BattleTeambuilderTable['gen8legends'].tiers = tiers;
 			BattleTeambuilderTable['gen8legends'].overrideTier = overrideTier;
+			BattleTeambuilderTable['gen8legends'].metagameBans = metagameBans;
 			BattleTeambuilderTable['gen8legends'].formatSlices = formatSlices;
 		} else if (isLegendsZa) {
 			BattleTeambuilderTable['gen9legends'] = {};
@@ -570,7 +571,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['champions'].items = items;
 			BattleTeambuilderTable['champions'].metagameBans = metagameBans;
 			BattleTeambuilderTable['champions'].overrideTier = overrideTier;
-			BattleTeambuilderTable['gen8bdsp'].metagameBans = metagameBans;
 			BattleTeambuilderTable['champions'].formatSlices = formatSlices;
 		} else if (isNDChampions) {
 			BattleTeambuilderTable['natdexchampions'] = {};

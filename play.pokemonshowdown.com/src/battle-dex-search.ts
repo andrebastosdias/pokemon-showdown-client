@@ -1319,12 +1319,13 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		if (format === 'skybattle') {
 			tierSet = tierSet.filter(([type, id]) => {
 				let species = dex.species.get(id);
+				if (species.baseSpecies === 'Gengar') return false;
+				if (Object.values(species.abilities).includes('Levitate')) return true;
 				if (species.battleOnly) {
 					species = dex.species.get(Array.isArray(species.battleOnly) ? species.battleOnly[0] : species.battleOnly);
 					if (table.metagameBans?.skybattle && species.id in table.metagameBans.skybattle) return false;
 				}
-				if (!species.types.includes('Flying') && !Object.values(species.abilities).includes('Levitate')) return false;
-				return true;
+				return species.types.includes('Flying');
 			});
 		}
 		if (format === '35pokes' && table.metagameBans?.nationaldex35pokes) {
