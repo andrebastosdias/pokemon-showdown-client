@@ -211,10 +211,7 @@ export class DexSearch {
 		this.numAbilityCols = 0;
 		if (this.typedSearch) {
 			this.dex = this.typedSearch.dex;
-			if (
-				searchType === 'pokemon' && this.dex.gen >= 3 &&
-				this.dex.modid !== 'gen7letsgo' && !this.dex.modid.includes('legends')
-			) {
+			if (searchType === 'pokemon' && this.dex.gen >= 3 && this.dex.modid !== 'gen7letsgo') {
 				this.numAbilityCols = this.dex.gen < 5 ? 1 : 2;
 			}
 		}
